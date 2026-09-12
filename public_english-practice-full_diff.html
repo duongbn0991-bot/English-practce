@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 English Practice A2-B1 | Luyện tập, Kiểm tra & Viết văn</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // ========== 20 TOPICS DATA ==========
+        const topics = [
+            { id: 'daily-life', title: 'Daily Life', level: 'A2', icon: '🏠', description: 'Cuộc sống hàng ngày', questions: [
+                { type: 'mc', q: 'I usually ___ up at 7 AM.', opts: ['get', 'wake', 'stand', 'rise'], ans: 0, exp: '"Get up" = thức dậy' },
+                { type: 'mc', q: 'She ___ the dishes after dinner.', opts: ['washes', 'cleans', 'makes', 'does'], ans: 3, exp: '"Do the dishes" = rửa bát' },
+                { type: 'mc', q: 'He takes the ___ to work.', opts: ['road', 'bus', 'street', 'way'], ans: 1, exp: '"Take the bus" = đi xe buýt' },
+                { type: 'fb', q: "Don't forget to ___ off the lights.", ans: 'turn', exp: '"Turn off" = tắt' },
+                { type: 'fb', q: 'I need to go to the ___ to buy bread.', ans: 'bakery', exp: '"Bakery" = tiệm bánh' },
+                { type: 'match', q: 'Nối hoạt động với thời gian:', left: ['breakfast', 'work', 'dinner', 'bed'], right: ['7 AM', '8 AM', '7 PM', '10 PM'], ans: ['breakfast-7 AM', 'work-8 AM', 'dinner-7 PM', 'bed-10 PM'] },
+                { type: 'listen', q: 'What time does she wake up?', audio: 'I wake up at 6:30 every morning.', opts: ['6:00', '6:30', '7:00', '7:30'], ans: 1, exp: '"6:30"' },
+                { type: 'speak', q: 'Mô tả một ngày của bạn', prompt: 'Describe your typical day.', tips: ['Use time expressions', 'Use present simple'], sample: 'I wake up at 6:30 AM.' }
+            ]},
+            { id: 'family', title: 'Family & Friends', level: 'A2', icon: '👨‍👩‍👧‍', description: 'Gia đình và bạn bè', questions: [
+                { type: 'mc', q: "My mother's sister is my ___.", opts: ['aunt', 'uncle', 'cousin', 'grandmother'], ans: 0, exp: '"Aunt" = cô/dì' },
+                { type: 'mc', q: 'He ___ his friend since school.', opts: ['knows', 'has known', 'knew', 'knowing'], ans: 1, exp: '"Since" + present perfect' },
+                { type: 'mc', q: 'We ___ together on weekends.', opts: ['hang out', 'hang up', 'hang on', 'hang in'], ans: 0, exp: '"Hang out" = đi chơi' },
+                { type: 'fb', q: 'My brother is two years ___ than me.', ans: 'older', exp: '"Older" = lớn hơn' },
+                { type: 'fb', q: "She ___ like her mother.", ans: 'looks', exp: '"Look like" = giống' },
+                { type: 'match', q: 'Nối thành viên gia đình:', left: ['father', 'mother', 'brother', 'sister'], right: ['dad', 'mom', 'male sibling', 'female sibling'], ans: ['father-dad', 'mother-mom', 'brother-male sibling', 'sister-female sibling'] },
+                { type: 'listen', q: "How old is the sister?", audio: 'My brother is 25 and my sister is 18.', opts: ['15', '18', '20', '25'], ans: 1, exp: '"18"' },
+                { type: 'speak', q: 'Mô tả thành viên gia đình', prompt: 'Describe a family member.', tips: ['Describe appearance', 'Describe personality'], sample: 'My mother is kind and patient.' }
+            ]},
+            { id: 'food', title: 'Food & Restaurant', level: 'A2', icon: '🍽️', description: 'Đồ ăn và nhà hàng', questions: [
+                { type: 'mc', q: 'Could I see the ___?', opts: ['menu', 'bill', 'order', 'recipe'], ans: 0, exp: '"Menu" = thực đơn' },
+                { type: 'mc', q: 'This soup is too ___.', opts: ['sweet', 'salty', 'bitter', 'fresh'], ans: 1, exp: '"Salty" = mặn' },
+                { type: 'mc', q: "I'd like to ___ a table.", opts: ['book', 'make', 'do', 'take'], ans: 0, exp: '"Book a table" = đặt bàn' },
+                { type: 'fb', q: 'Could we have the ___?', ans: 'bill', exp: '"Bill" = hóa đơn' },
+                { type: 'fb', q: 'This cake is ___.', ans: 'delicious', exp: '"Delicious" = ngon' },
+                { type: 'match', q: 'Nối món ăn:', left: ['pizza', 'sushi', 'pho', 'salad'], right: ['Italian', 'Japanese', 'Vietnamese', 'Vegetables'], ans: ['pizza-Italian', 'sushi-Japanese', 'pho-Vietnamese', 'salad-Vegetables'] },
+                { type: 'listen', q: 'What did they order?', audio: "I'd like grilled chicken with rice, please.", opts: ['Fish', 'Chicken with rice', 'Beef', 'Pasta'], ans: 1, exp: '"grilled chicken with rice"' },
+                { type: 'speak', q: 'Mô tả món ăn yêu thích', prompt: 'Describe your favorite food.', tips: ['Describe appearance', 'Describe taste'], sample: 'My favorite food is pho.' }
+            ]},
+            { id: 'travel', title: 'Travel & Transport', level: 'A2', icon: '✈️', description: 'Du lịch và giao thông', questions: [
+                { type: 'mc', q: 'Show your ___ at the airport.', opts: ['ticket', 'passport', 'luggage', 'map'], ans: 1, exp: '"Passport" = hộ chiếu' },
+                { type: 'mc', q: 'We need to ___ a hotel.', opts: ['book', 'buy', 'make', 'take'], ans: 0, exp: '"Book a hotel" = đặt phòng' },
+                { type: 'mc', q: "I'd like a ___ seat.", opts: ['window', 'wall', 'glass', 'side'], ans: 0, exp: '"Window seat" = ghế cửa sổ' },
+                { type: 'fb', q: 'Fasten your ___ belt.', ans: 'seat', exp: '"Seat belt" = dây an toàn' },
+                { type: 'fb', q: "Don't forget to ___ your luggage.", ans: 'pack', exp: '"Pack" = đóng gói' },
+                { type: 'match', q: 'Nối phương tiện:', left: ['plane', 'train', 'ship', 'bus'], right: ['airport', 'station', 'port', 'bus stop'], ans: ['plane-airport', 'train-station', 'ship-port', 'bus-bus stop'] },
+                { type: 'listen', q: 'Where is boarding?', audio: 'Flight BA 285 is boarding at Gate 12.', opts: ['Gate 5', 'Gate 10', 'Gate 12', 'Gate 20'], ans: 2, exp: '"Gate 12"' },
+                { type: 'speak', q: 'Kể về chuyến du lịch', prompt: 'Talk about a memorable trip.', tips: ['Use past tense', 'Mention where, when, who'], sample: 'Last summer, I went to Da Nang.' }
+            ]},
+            { id: 'health', title: 'Health & Body', level: 'A2', icon: '🏥', description: 'Sức khỏe và cơ thể', questions: [
+                { type: 'mc', q: 'I have a ___. I need a dentist.', opts: ['headache', 'toothache', 'stomachache', 'backache'], ans: 1, exp: '"Toothache" = đau răng' },
+                { type: 'mc', q: 'You should ___ exercise.', opts: ['do', 'make', 'have', 'take'], ans: 0, exp: '"Do exercise" = tập thể dục' },
+                { type: 'mc', q: 'She has a high ___.', opts: ['temperature', 'pressure', 'pulse', 'breath'], ans: 0, exp: '"High temperature" = sốt' },
+                { type: 'fb', q: "I have a ___.", ans: 'cold', exp: '"Have a cold" = cảm lạnh' },
+                { type: 'fb', q: 'Eat more ___ and vegetables.', ans: 'fruit', exp: '"Fruit" = trái cây' },
+                { type: 'match', q: 'Nối bộ phận:', left: ['eyes', 'ears', 'nose', 'mouth'], right: ['see', 'hear', 'smell', 'eat'], ans: ['eyes-see', 'ears-hear', 'nose-smell', 'mouth-eat'] },
+                { type: 'listen', q: 'How long has the headache?', audio: "I've had a headache for three days.", opts: ['1 day', '2 days', '3 days', '4 days'], ans: 2, exp: '"three days"' },
+                { type: 'speak', q: 'Cho lời khuyên sức khỏe', prompt: 'Give health advice.', tips: ['Use should/shouldn\'t', 'Be specific'], sample: 'You should exercise regularly.' }
+            ]},
+            { id: 'shopping', title: 'Shopping', level: 'A2', icon: '🛍️', description: 'Mua sắm', questions: [
+                { type: 'mc', q: 'This shirt is too ___.', opts: ['small', 'little', 'short', 'thin'], ans: 0, exp: '"Small" = nhỏ' },
+                { type: 'mc', q: 'Can I ___ with a card?', opts: ['pay for', 'buy for', 'spend for', 'cost'], ans: 0, exp: '"Pay for" = thanh toán' },
+                { type: 'mc', q: 'The dress is ___ 20%.', opts: ['on sale', 'for sale', 'in sale', 'at sale'], ans: 0, exp: '"On sale" = giảm giá' },
+                { type: 'fb', q: "I'd like to ___ this jacket.", ans: 'return', exp: '"Return" = trả lại' },
+                { type: 'fb', q: 'How much does this ___?', ans: 'cost', exp: '"Cost" = giá' },
+                { type: 'match', q: 'Nối cửa hàng:', left: ['bakery', 'pharmacy', 'bookstore', 'butcher'], right: ['bread', 'medicine', 'books', 'meat'], ans: ['bakery-bread', 'pharmacy-medicine', 'bookstore-books', 'butcher-meat'] },
+                { type: 'listen', q: 'What is the sale price?', audio: "It's 45 dollars, but on sale for 35 dollars.", opts: ['$25', '$35', '$45', '$55'], ans: 1, exp: '"35 dollars"' },
+                { type: 'speak', q: 'Mô tả trải nghiệm mua sắm', prompt: 'Talk about your last shopping experience.', tips: ['Use past tense', 'Describe items'], sample: 'Last weekend, I bought a new jacket.' }
+            ]},
+            { id: 'weather', title: 'Weather & Seasons', level: 'A2', icon: '🌤️', description: 'Thời tiết và mùa', questions: [
+                { type: 'mc', q: "It's ___. Take an umbrella!", opts: ['sunny', 'rainy', 'cloudy', 'windy'], ans: 1, exp: '"Rainy" = mưa' },
+                { type: 'mc', q: 'Temperature ___ below zero.', opts: ['falls', 'raises', 'climbs', 'grows'], ans: 0, exp: '"Falls" = giảm' },
+                { type: 'mc', q: 'I love ___ - flowers are beautiful.', opts: ['spring', 'summer', 'autumn', 'winter'], ans: 0, exp: '"Spring" = mùa xuân' },
+                { type: 'fb', q: 'The weather is very ___.', ans: 'hot', exp: '"Hot" = nóng' },
+                { type: 'fb', q: 'In autumn, leaves ___.', ans: 'fall', exp: '"Fall" = rơi' },
+                { type: 'match', q: 'Nối mùa:', left: ['Spring', 'Summer', 'Autumn', 'Winter'], right: ['Flowers bloom', 'Very hot', 'Leaves change', 'Snow falls'], ans: ['Spring-Flowers bloom', 'Summer-Very hot', 'Autumn-Leaves change', 'Winter-Snow falls'] },
+                { type: 'listen', q: 'What about Sunday?', audio: 'Sunday will be cloudy with rain in the afternoon.', opts: ['Sunny', 'Cloudy and rainy', 'Snowy', 'Windy'], ans: 1, exp: '"cloudy with rain"' },
+                { type: 'speak', q: 'Mô tả mùa yêu thích', prompt: 'Describe your favorite season.', tips: ['Describe weather', 'Talk about activities'], sample: 'My favorite season is autumn.' }
+            ]},
+            { id: 'hobbies', title: 'Hobbies & Free Time', level: 'A2', icon: '🎨', description: 'Sở thích và thời gian rảnh', questions: [
+                { type: 'mc', q: 'I enjoy ___ books.', opts: ['read', 'reading', 'to reading', 'reads'], ans: 1, exp: '"Enjoy + V-ing"' },
+                { type: 'mc', q: 'She is ___ at piano.', opts: ['good', 'well', 'nice', 'fine'], ans: 0, exp: '"Good at" = giỏi' },
+                { type: 'mc', q: 'He ___ collects stamps.', opts: ['hobby', 'hobbyist', 'hobbies', 'is hobby'], ans: 0, exp: '"Hobby" = sở thích' },
+                { type: 'fb', q: "I'm ___ in learning languages.", ans: 'interested', exp: '"Interested in" = quan tâm' },
+                { type: 'fb', q: 'She ___ photography.', ans: 'does', exp: '"Do photography" = chụp ảnh' },
+                { type: 'match', q: 'Nối sở thích:', left: ['painting', 'gardening', 'cooking', 'jogging'], right: ['Art with colors', 'Growing plants', 'Making food', 'Running'], ans: ['painting-Art with colors', 'gardening-Growing plants', 'cooking-Making food', 'jogging-Running'] },
+                { type: 'listen', q: 'How long playing guitar?', audio: "I've been playing guitar for three years.", opts: ['1 year', '2 years', '3 years', '4 years'], ans: 2, exp: '"three years"' },
+                { type: 'speak', q: 'Nói về sở thích', prompt: 'Talk about your favorite hobby.', tips: ['Name the hobby', 'Explain why you like it'], sample: 'My favorite hobby is reading.' }
+            ]},
+            { id: 'school', title: 'School & Education', level: 'A2', icon: '🎓', description: 'Trường học và giáo dục', questions: [
+                { type: 'mc', q: 'Students need to ___ homework.', opts: ['hand in', 'hand out', 'hand over', 'hand up'], ans: 0, exp: '"Hand in" = nộp' },
+                { type: 'mc', q: 'She ___ first place.', opts: ['got', 'won', 'took', 'made'], ans: 1, exp: '"Won" = giành' },
+                { type: 'mc', q: '___ the textbook to page 50.', opts: ['Open', 'Turn', 'Close', 'Read'], ans: 0, exp: '"Open" = mở' },
+                { type: 'fb', q: 'I need to ___ for the exam.', ans: 'study', exp: '"Study" = ôn' },
+                { type: 'fb', q: 'She ___ her degree last year.', ans: 'got', exp: '"Get a degree" = nhận bằng' },
+                { type: 'match', q: 'Nối từ trường học:', left: ['principal', 'subject', 'grade', 'semester'], right: ['Hiệu trưởng', 'Môn học', 'Điểm', 'Học kỳ'], ans: ['principal-Hiệu trưởng', 'subject-Môn học', 'grade-Điểm', 'semester-Học kỳ'] },
+                { type: 'listen', q: 'When is the project due?', audio: 'The project is due next Friday.', opts: ['This Friday', 'Next Wednesday', 'Next Friday', 'Next Monday'], ans: 2, exp: '"next Friday"' },
+                { type: 'speak', q: 'Mô tả trường học', prompt: 'Describe your school.', tips: ['Describe building', 'Mention favorite subject'], sample: 'I study at a large high school.' }
+            ]},
+            { id: 'work', title: 'Work & Business', level: 'B1', icon: '💼', description: 'Công việc và kinh doanh', questions: [
+                { type: 'mc', q: 'She ___ a meeting.', opts: ['made', 'scheduled', 'did', 'put'], ans: 1, exp: '"Schedule" = lên lịch' },
+                { type: 'mc', q: 'He was ___ from his job.', opts: ['fired', 'left', 'resigned', 'quit'], ans: 0, exp: '"Fired" = bị sa thải' },
+                { type: 'mc', q: 'The company needs to ___ employees.', opts: ['hire', 'fire', 'resign', 'quit'], ans: 0, exp: '"Hire" = tuyển' },
+                { type: 'fb', q: 'Write a ___ for the project.', ans: 'proposal', exp: '"Proposal" = đề xuất' },
+                { type: 'fb', q: 'He ___ a promotion.', ans: 'got', exp: '"Get promotion" = thăng chức' },
+                { type: 'match', q: 'Nối từ công việc:', left: ['salary', 'deadline', 'colleague', 'interview'], right: ['Lương', 'Hạn chót', 'Đồng nghiệp', 'Phỏng vấn'], ans: ['salary-Lương', 'deadline-Hạn chót', 'colleague-Đồng nghiệp', 'interview-Phỏng vấn'] },
+                { type: 'listen', q: 'How long at ABC Company?', audio: 'I worked at ABC Company for two years.', opts: ['1 year', '2 years', '3 years', '4 years'], ans: 1, exp: '"two years"' },
+                { type: 'speak', q: 'Nói về công việc mơ ước', prompt: 'Describe your dream job.', tips: ['Use would', 'Describe responsibilities'], sample: 'My dream job is to be a software engineer.' }
+            ]},
+            { id: 'environment', title: 'Environment & Nature', level: 'B1', icon: '🌍', description: 'Môi trường và thiên nhiên', questions: [
+                { type: 'mc', q: 'Reduce ___ to protect environment.', opts: ['pollution', 'population', 'production', 'position'], ans: 0, exp: '"Pollution" = ô nhiễm' },
+                { type: 'mc', q: 'Solar energy is ___.', opts: ['renewable', 'expensive', 'dangerous', 'limited'], ans: 0, exp: '"Renewable" = tái tạo' },
+                { type: 'mc', q: 'Animals in ___ of extinction.', opts: ['danger', 'trouble', 'risk', 'harm'], ans: 0, exp: '"In danger" = nguy hiểm' },
+                { type: 'fb', q: 'Global ___ is rising.', ans: 'warming', exp: '"Global warming" = nóng lên toàn cầu' },
+                { type: 'fb', q: 'Use public ___.', ans: 'transport', exp: '"Public transport" = giao thông công cộng' },
+                { type: 'match', q: 'Nối vấn đề-giải pháp:', left: ['Air pollution', 'Deforestation', 'Water waste', 'Plastic waste'], right: ['Public transport', 'Plant trees', 'Fix taps', 'Recycle'], ans: ['Air pollution-Public transport', 'Deforestation-Plant trees', 'Water waste-Fix taps', 'Plastic waste-Recycle'] },
+                { type: 'listen', q: 'How much plastic in oceans?', audio: 'About 8 million tons of plastic end up in oceans every year.', opts: ['5M tons', '8M tons', '10M tons', '12M tons'], ans: 1, exp: '"8 million tons"' },
+                { type: 'speak', q: 'Nói về bảo vệ môi trường', prompt: 'What can individuals do to help the environment?', tips: ['Give 3 actions', 'Explain why important'], sample: 'We can recycle and save energy.' }
+            ]},
+            { id: 'technology', title: 'Technology', level: 'B1', icon: '💻', description: 'Công nghệ', questions: [
+                { type: 'mc', q: '___ your password regularly.', opts: ['Change', 'Make', 'Do', 'Put'], ans: 0, exp: '"Change" = đổi' },
+                { type: 'mc', q: 'New software is more ___.', opts: ['efficient', 'effective', 'affecting', 'effort'], ans: 0, exp: '"Efficient" = hiệu quả' },
+                { type: 'mc', q: 'My phone ___ - battery dead.', opts: ["won't work", "doesn't work", "isn't working", "hasn't worked"], ans: 2, exp: '"Isn\'t working" = tạm thời' },
+                { type: 'fb', q: 'I need to ___ this file.', ans: 'send', exp: '"Send" = gửi' },
+                { type: 'fb', q: 'Website is very ___.', ans: 'user-friendly', exp: '"User-friendly" = dễ dùng' },
+                { type: 'match', q: 'Nối thiết bị:', left: ['smartphone', 'laptop', 'tablet', 'smartwatch'], right: ['Communication', 'Work', 'Reading', 'Fitness'], ans: ['smartphone-Communication', 'laptop-Work', 'tablet-Reading', 'smartwatch-Fitness'] },
+                { type: 'listen', q: 'What do shopping platforms use AI for?', audio: 'Online shopping platforms use AI to recommend products.', opts: ['Making products', 'Delivering', 'Recommending', 'Creating websites'], ans: 2, exp: '"recommend products"' },
+                { type: 'speak', q: 'Nói về tác động công nghệ', prompt: 'How has technology changed your life?', tips: ['Positive and negative', 'Give examples'], sample: 'Technology helps me communicate instantly.' }
+            ]},
+            { id: 'culture', title: 'Culture & Traditions', level: 'B1', icon: '🎎', description: 'Văn hóa và truyền thống', questions: [
+                { type: 'mc', q: 'Festival is ___ every year.', opts: ['held', 'made', 'done', 'put'], ans: 0, exp: '"Held" = tổ chức' },
+                { type: 'mc', q: "It's a ___ to give lucky money.", opts: ['tradition', 'traditioning', 'traditional', 'traditionly'], ans: 0, exp: '"Tradition" = truyền thống' },
+                { type: 'mc', q: 'She ___ the costume.', opts: ['wore', 'dressed', 'put', 'had'], ans: 0, exp: '"Wore" = mặc' },
+                { type: 'fb', q: 'The ___ food was delicious.', ans: 'traditional', exp: '"Traditional" = truyền thống' },
+                { type: 'fb', q: 'People ___ fireworks.', ans: 'set off', exp: '"Set off" = bắn' },
+                { type: 'match', q: 'Nối lễ hội:', left: ['Tet', 'Thanksgiving', 'Diwali', 'Oktoberfest'], right: ['Vietnam', 'USA', 'India', 'Germany'], ans: ['Tet-Vietnam', 'Thanksgiving-USA', 'Diwali-India', 'Oktoberfest-Germany'] },
+                { type: 'listen', q: 'When is Mid-Autumn Festival?', audio: 'Mid-Autumn Festival takes place in September or October.', opts: ['January', 'April', 'September or October', 'December'], ans: 2, exp: '"September or October"' },
+                { type: 'speak', q: 'Giới thiệu lễ hội', prompt: 'Describe a traditional festival.', tips: ['When it happens', 'What people do'], sample: 'Tet is the Vietnamese New Year.' }
+            ]},
+            { id: 'sports', title: 'Sports & Fitness', level: 'B1', icon: '⚽', description: 'Thể thao và thể hình', questions: [
+                { type: 'mc', q: 'He ___ the world record.', opts: ['broke', 'made', 'did', 'set'], ans: 0, exp: '"Broke" = phá' },
+                { type: 'mc', q: '___ before exercising.', opts: ['Warm up', 'Warm down', 'Cool up', 'Cool off'], ans: 0, exp: '"Warm up" = khởi động' },
+                { type: 'mc', q: 'Team ___ the championship.', opts: ['won', 'beat', 'scored', 'made'], ans: 0, exp: '"Won" = giành' },
+                { type: 'fb', q: 'She goes to the ___ three times a week.', ans: 'gym', exp: '"Gym" = phòng tập' },
+                { type: 'fb', q: 'Exercise improves ___ health.', ans: 'mental', exp: '"Mental" = tinh thần' },
+                { type: 'match', q: 'Nối môn-dụng cụ:', left: ['football', 'tennis', 'swimming', 'cycling'], right: ['ball', 'racket', 'goggles', 'bicycle'], ans: ['football-ball', 'tennis-racket', 'swimming-goggles', 'cycling-bicycle'] },
+                { type: 'listen', q: 'What is the final score?', audio: 'The home team wins 2-1.', opts: ['1-0', '1-1', '2-1', '2-2'], ans: 2, exp: '"2-1"' },
+                { type: 'speak', q: 'Nói về môn thể thao yêu thích', prompt: 'Talk about your favorite sport.', tips: ['How often', 'Why you like it'], sample: 'My favorite sport is badminton.' }
+            ]},
+            { id: 'media', title: 'Media & Entertainment', level: 'B1', icon: '🎬', description: 'Truyền thông và giải trí', questions: [
+                { type: 'mc', q: 'Movie was so ___ I fell asleep.', opts: ['boring', 'bored', 'bore', 'boringly'], ans: 0, exp: '"Boring" = nhàm chán' },
+                { type: 'mc', q: 'Actor ___ the leading role.', opts: ['played', 'did', 'made', 'acted'], ans: 0, exp: '"Played" = đóng' },
+                { type: 'mc', q: 'Song ___ top of charts.', opts: ['stayed', 'remained', 'kept', 'held'], ans: 0, exp: '"Stayed" = giữ' },
+                { type: 'fb', q: "Can't stop watching this TV ___.", ans: 'series', exp: '"Series" = phim bộ' },
+                { type: 'fb', q: 'The ___ was different from movie.', ans: 'ending', exp: '"Ending" = kết thúc' },
+                { type: 'match', q: 'Nối thể loại phim:', left: ['comedy', 'horror', 'documentary', 'romance'], right: ['Funny', 'Scary', 'Real events', 'Love story'], ans: ['comedy-Funny', 'horror-Scary', 'documentary-Real events', 'romance-Love story'] },
+                { type: 'listen', q: 'What about cinematography?', audio: 'The cinematography is absolutely stunning.', opts: ['Average', 'Stunning', 'Disappointing', 'Not mentioned'], ans: 1, exp: '"stunning"' },
+                { type: 'speak', q: 'Review phim', prompt: 'Talk about a movie you watched.', tips: ['What it was about', 'Did you like it'], sample: "I watched 'The Shawshank Redemption'." }
+            ]},
+            { id: 'relationships', title: 'Relationships', level: 'B1', icon: '❤️', description: 'Các mối quan hệ', questions: [
+                { type: 'mc', q: 'They have been ___ for 5 years.', opts: ['married', 'marrying', 'marriage', 'marry'], ans: 0, exp: '"Been married" = đã kết hôn' },
+                { type: 'mc', q: 'She ___ up with boyfriend.', opts: ['broke', 'got', 'made', 'put'], ans: 0, exp: '"Broke up" = chia tay' },
+                { type: 'mc', q: 'They ___ a lot in common.', opts: ['have', 'do', 'make', 'take'], ans: 0, exp: '"Have in common" = có chung' },
+                { type: 'fb', q: 'Communication is ___ to relationship.', ans: 'essential', exp: '"Essential" = thiết yếu' },
+                { type: 'fb', q: 'Always be ___ with partner.', ans: 'honest', exp: '"Honest" = trung thực' },
+                { type: 'match', q: 'Nối cụm từ:', left: ['get along with', 'fall out with', 'make up', 'trust'], right: ['Hòa hợp', 'Cãi nhau', 'Làm lành', 'Tin tưởng'], ans: ['get along with-Hòa hợp', 'fall out with-Cãi nhau', 'make up-Làm lành', 'trust-Tin tưởng'] },
+                { type: 'listen', q: 'What to do instead of blaming?', audio: 'Instead of blaming, try to find solutions together.', opts: ['Ignore', 'Find solutions together', 'Talk to others', 'End relationship'], ans: 1, exp: '"find solutions together"' },
+                { type: 'speak', q: 'Nói về người quan trọng', prompt: 'Talk about someone important in your life.', tips: ['Who they are', 'What impact they had'], sample: 'My teacher had a significant impact.' }
+            ]},
+            { id: 'housing', title: 'Housing & Living', level: 'B1', icon: '🏡', description: 'Nhà ở và cuộc sống', questions: [
+                { type: 'mc', q: 'Need to ___ rent by month end.', opts: ['pay', 'give', 'spend', 'cost'], ans: 0, exp: '"Pay rent" = trả tiền thuê' },
+                { type: 'mc', q: 'Apartment ___ 3 bedrooms.', opts: ['has', 'have', 'is having', 'having'], ans: 0, exp: '"Has" = có' },
+                { type: 'mc', q: 'Looking for place to ___.', opts: ['rent', 'lend', 'borrow', 'hire'], ans: 0, exp: '"Rent" = thuê' },
+                { type: 'fb', q: 'The ___ is friendly.', ans: 'neighborhood', exp: '"Neighborhood" = hàng xóm' },
+                { type: 'fb', q: 'Need to ___ walls before painting.', ans: 'clean', exp: '"Clean" = lau sạch' },
+                { type: 'match', q: 'Nối loại nhà:', left: ['apartment', 'villa', 'studio', 'townhouse'], right: ['Flat', 'Luxury house', 'One-room', 'Multi-floor'], ans: ['apartment-Flat', 'villa-Luxury house', 'studio-One-room', 'townhouse-Multi-floor'] },
+                { type: 'listen', q: 'How much is rent?', audio: 'The rent is about 500 dollars per month.', opts: ['$300', '$400', '$500', '$600'], ans: 2, exp: '"500 dollars"' },
+                { type: 'speak', q: 'Mô tả nơi ở lý tưởng', prompt: 'Describe your ideal home.', tips: ['Use would', 'Describe location and features'], sample: 'My ideal home would be near the beach.' }
+            ]},
+            { id: 'finance', title: 'Finance & Money', level: 'B1', icon: '💰', description: 'Tài chính và tiền bạc', questions: [
+                { type: 'mc', q: 'You should ___ money monthly.', opts: ['save', 'spend', 'waste', 'lose'], ans: 0, exp: '"Save" = tiết kiệm' },
+                { type: 'mc', q: 'He ___ a loan from bank.', opts: ['took', 'made', 'did', 'got'], ans: 0, exp: '"Took a loan" = vay' },
+                { type: 'mc', q: 'Prices have ___ significantly.', opts: ['increased', 'raised', 'grown', 'developed'], ans: 0, exp: '"Increased" = tăng' },
+                { type: 'fb', q: 'Create a ___ to manage expenses.', ans: 'budget', exp: '"Budget" = ngân sách' },
+                { type: 'fb', q: 'Invested in stock ___.', ans: 'market', exp: '"Stock market" = chứng khoán' },
+                { type: 'match', q: 'Nối từ tài chính:', left: ['income', 'expense', 'debt', 'investment'], right: ['Thu nhập', 'Chi phí', 'Nợ', 'Đầu tư'], ans: ['income-Thu nhập', 'expense-Chi phí', 'debt-Nợ', 'investment-Đầu tư'] },
+                { type: 'listen', q: 'How much to save monthly?', audio: 'Save at least 20 percent of your income each month.', opts: ['10%', '15%', '20%', '25%'], ans: 2, exp: '"20 percent"' },
+                { type: 'speak', q: 'Nói về quản lý tiền', prompt: 'How do you manage your money?', tips: ['Income sources', 'Saving strategies'], sample: 'I save 50 dollars each month.' }
+            ]},
+            { id: 'social-issues', title: 'Social Issues', level: 'B1+', icon: '🌐', description: 'Vấn đề xã hội (NÂNG CAO)', questions: [
+                { type: 'mc', q: 'Government should ___ attention to education.', opts: ['pay', 'give', 'make', 'take'], ans: 0, exp: '"Pay attention" = chú ý' },
+                { type: 'mc', q: 'Poverty ___ millions.', opts: ['affects', 'effects', 'affecting', 'affected'], ans: 0, exp: '"Affects" = ảnh hưởng' },
+                { type: 'mc', q: 'Need to ___ awareness.', opts: ['raise', 'rise', 'arise', 'arouse'], ans: 0, exp: '"Raise awareness" = nâng cao nhận thức' },
+                { type: 'fb', q: "Children don't have ___ to education.", ans: 'access', exp: '"Access" = tiếp cận' },
+                { type: 'fb', q: 'The ___ between rich and poor is growing.', ans: 'gap', exp: '"Gap" = khoảng cách' },
+                { type: 'match', q: 'Nối vấn đề-giải pháp:', left: ['Homelessness', 'Illiteracy', 'Unemployment', 'Discrimination'], right: ['Affordable housing', 'Free education', 'Job opportunities', 'Equality laws'], ans: ['Homelessness-Affordable housing', 'Illiteracy-Free education', 'Unemployment-Job opportunities', 'Discrimination-Equality laws'] },
+                { type: 'listen', q: 'What can bridge education gap?', audio: 'Online learning platforms can help bridge the gap.', opts: ['More city schools', 'Online platforms', 'Lower teacher salaries', 'Close rural schools'], ans: 1, exp: '"Online learning platforms"' },
+                { type: 'speak', q: 'Thảo luận vấn đề xã hội', prompt: 'Discuss youth unemployment: causes, effects, solutions.', tips: ['Analyze causes', 'Propose solutions'], sample: 'Youth unemployment is caused by skills mismatch.' }
+            ]},
+            { id: 'global-challenges', title: 'Global Challenges', level: 'B1+', icon: '🌏', description: 'Thách thức toàn cầu (NÂNG CAO)', questions: [
+                { type: 'mc', q: 'Climate change is a ___ threat.', opts: ['major', 'mainly', 'majority', 'majored'], ans: 0, exp: '"Major" = lớn' },
+                { type: 'mc', q: 'Countries need to ___ together.', opts: ['cooperate', 'compete', 'compare', 'connect'], ans: 0, exp: '"Cooperate" = hợp tác' },
+                { type: 'mc', q: '___ of resources is a concern.', opts: ['Depletion', 'Completion', 'Competition', 'Composition'], ans: 0, exp: '"Depletion" = cạn kiệt' },
+                { type: 'fb', q: 'Need ___ solutions.', ans: 'sustainable', exp: '"Sustainable" = bền vững' },
+                { type: 'fb', q: 'International ___ is essential.', ans: 'cooperation', exp: '"Cooperation" = hợp tác' },
+                { type: 'match', q: 'Nối thách thức:', left: ['Climate change', 'Pandemic', 'Poverty', 'Migration'], right: ['Rising temps', 'Disease outbreak', 'Lack of needs', 'People moving'], ans: ['Climate change-Rising temps', 'Pandemic-Disease outbreak', 'Poverty-Lack of needs', 'Migration-People moving'] },
+                { type: 'listen', q: 'What about challenges?', audio: 'These challenges are interconnected.', opts: ['Unrelated', 'Interconnected', 'Easy to solve', 'Only affect poor countries'], ans: 1, exp: '"interconnected"' },
+                { type: 'speak', q: 'Thảo luận tương lai', prompt: 'What will be the biggest challenge in 50 years?', tips: ['State prediction', 'Explain significance'], sample: 'Climate change will be the biggest challenge.' }
+            ]}
+        ];
+
+        // ========== WRITING PROMPTS ==========
+        const writingPrompts = [
+            { id: 'write-a2-1', title: 'My Daily Routine', level: 'A2', icon: '📝', wordCount: 80, prompt: 'Write about your daily routine. What do you do in the morning, afternoon, and evening?', tips: ['Use present simple tense', 'Include time expressions (at 7 AM, in the morning)', 'Describe 3-4 activities', 'Use sequence words: First, Then, After that, Finally'], example: 'I usually wake up at 6:30 AM. First, I have a shower and get dressed. Then I have breakfast with my family. I leave home at 7:45 and take the bus to work...' },
+            { id: 'write-a2-2', title: 'My Best Friend', level: 'A2', icon: '👫', wordCount: 100, prompt: 'Describe your best friend. What do they look like? What is their personality? Why do you like them?', tips: ['Use adjectives for appearance (tall, short, curly hair)', 'Use personality adjectives (friendly, funny, kind)', 'Give specific examples', 'Use present simple for habits'], example: 'My best friend is Minh. He is tall with short black hair and brown eyes. He has a friendly smile. He is very funny and kind. We usually play football together on weekends...' },
+            { id: 'write-a2-3', title: 'My Favorite Food', level: 'A2', icon: '🍕', wordCount: 80, prompt: 'Write about your favorite food. What is it? What does it look like? How does it taste? Why do you like it?', tips: ['Describe appearance (color, shape)', 'Describe taste (sweet, salty, spicy)', 'Use sensory adjectives', 'Explain why you like it'], example: 'My favorite food is pho, a traditional Vietnamese noodle soup. It has white rice noodles, sliced beef, and fresh herbs in a clear broth. It tastes delicious and savory...' },
+            { id: 'write-b1-1', title: 'A Memorable Trip', level: 'B1', icon: '✈️', wordCount: 150, prompt: 'Write about a memorable trip you took. Where did you go? Who did you go with? What did you do? Why was it memorable?', tips: ['Use past tense', 'Include details (where, when, who, what)', 'Describe activities and experiences', 'Explain why it was special'], example: 'Last summer, I went to Da Nang with my family. We stayed there for five days at a beach resort. During the trip, we visited Ba Na Hills, swam in the sea, and tried local seafood...' },
+            { id: 'write-b1-2', title: 'Technology in Our Lives', level: 'B1', icon: '💻', wordCount: 180, prompt: 'How has technology changed our daily lives? Discuss both positive and negative effects. Give examples.', tips: ['Use: On the one hand... On the other hand...', 'Give specific examples', 'Use linking words (However, Moreover, For example)', 'Conclude with your opinion'], example: 'Technology has significantly changed our daily lives in many ways. On the positive side, we can communicate instantly with friends and family through messaging apps. We also use technology for learning...' },
+            { id: 'write-b1-3', title: 'Environmental Problems', level: 'B1', icon: '🌍', wordCount: 200, prompt: 'What are the main environmental problems today? What can individuals do to help solve these problems?', tips: ['Identify 2-3 problems', 'Explain causes and effects', 'Suggest solutions', 'Use: One problem is... Another issue is...', 'Give personal examples'], example: 'There are several serious environmental problems today. One major issue is air pollution caused by vehicles and factories. Another problem is deforestation, which destroys animal habitats...' },
+            { id: 'write-b1plus-1', title: 'Social Media: Good or Bad?', level: 'B1+', icon: '📱', wordCount: 250, prompt: 'Some people think social media has a positive impact on society, while others believe it is harmful. Discuss both views and give your opinion.', tips: ['Present both sides of the argument', 'Use: Some people argue that... Others believe that...', 'Give reasons and examples for each view', 'State your opinion clearly with reasons'], example: 'Social media has become an integral part of modern life, but opinions about its impact are divided. Some people argue that social media connects people and provides valuable information...' },
+            { id: 'write-b1plus-2', title: 'The Future of Work', level: 'B1+', icon: '💼', wordCount: 250, prompt: 'How do you think work will change in the future? What skills will be important? How should people prepare?', tips: ['Use future tenses (will, might, is likely to)', 'Discuss changes in technology and work patterns', 'Identify important skills', 'Suggest preparation strategies'], example: 'The world of work is likely to change dramatically in the coming decades. With advances in artificial intelligence and automation, many traditional jobs may disappear...' },
+        ];
+
+        // ========== TEST DATA ==========
+        const tests = [
+            { id: 'test-a2', title: 'Kiểm tra A2 - Cơ bản', level: 'A2', duration: 30, icon: '📝', desc: 'Tổng hợp trình độ A2' },
+            { id: 'test-b1', title: 'Kiểm tra B1 - Trung cấp', level: 'B1', duration: 40, icon: '📋', desc: 'Tổng hợp trình độ B1' },
+            { id: 'test-b1plus', title: 'Kiểm tra B1+ - Nâng cao', level: 'B1+', duration: 45, icon: '🏆', desc: 'Trình độ nâng cao B1+' },
+            { id: 'test-mixed', title: 'Kiểm tra Tổng hợp', level: 'A2-B1+', duration: 50, icon: '🎯', desc: 'Mix tất cả cấp độ' },
+            { id: 'test-grammar', title: 'Kiểm tra Ngữ pháp', level: 'A2-B1', duration: 25, icon: '📖', desc: 'Tập trung Chọn & Viết' },
+            { id: 'test-skills', title: 'Kiểm tra Kỹ năng', level: 'A2-B1+', duration: 35, icon: '🎧', desc: 'Tập trung Nghe, Nói, Nối' }
+        ];
+
+        function getTestQuestions(testId) {
+            let filteredTopics = topics;
+            if (testId === 'test-a2') filteredTopics = topics.filter(t => t.level === 'A2');
+            else if (testId === 'test-b1') filteredTopics = topics.filter(t => t.level === 'B1');
+            else if (testId === 'test-b1plus') filteredTopics = topics.filter(t => t.level === 'B1+');
+
+            const allQ = [];
+            filteredTopics.forEach(t => t.questions.forEach(q => allQ.push({...q})));
+
+            if (testId === 'test-grammar') return allQ.filter(q => q.type === 'mc' || q.type === 'fb').sort(() => Math.random() - 0.5).slice(0, 20);
+            else if (testId === 'test-skills') return allQ.filter(q => q.type === 'listen' || q.type === 'speak' || q.type === 'match').sort(() => Math.random() - 0.5).slice(0, 20);
+            else return allQ.sort(() => Math.random() - 0.5).slice(0, 20);
+        }
+
+        // ========== WRITING GRADER ==========
+        function gradeWriting(text, prompt) {
+            const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+            const wordCount = words.length;
+            const targetWords = prompt.wordCount;
+
+            // Word count score (0-25)
+            const wordRatio = wordCount / targetWords;
+            let wordScore = 0;
+            if (wordRatio >= 0.9 && wordRatio <= 1.2) wordScore = 25;
+            else if (wordRatio >= 0.7 && wordRatio <= 1.4) wordScore = 20;
+            else if (wordRatio >= 0.5) wordScore = 15;
+            else wordScore = 10;
+
+            // Grammar check (0-25)
+            let grammarScore = 25;
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+
+            // Check for basic grammar issues
+            if (sentences.length > 0) {
+                sentences.forEach(s => {
+                    const trimmed = s.trim();
+                    if (trimmed.length > 0) {
+                        // Check capitalization
+                        if (trimmed[0] !== trimmed[0].toUpperCase()) grammarScore -= 2;
+                        // Check for double spaces
+                        if (s.includes('  ')) grammarScore -= 1;
+                    }
+                });
+            }
+
+            // Check for common errors
+            const lowerText = text.toLowerCase();
+            if (lowerText.includes(' i ')) grammarScore -= 3; // lowercase 'i'
+            if ((text.match(/\b\w+\b\s+\b\w+\b\s+\b\w+\b/g) || []).length === 0) grammarScore -= 5; // very short sentences
+
+            grammarScore = Math.max(0, grammarScore);
+
+            // Vocabulary score (0-25)
+            const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+            const vocabularyRichness = uniqueWords.size / words.length;
+            let vocabScore = 0;
+            if (vocabularyRichness > 0.7) vocabScore = 25;
+            else if (vocabularyRichness > 0.6) vocabScore = 20;
+            else if (vocabularyRichness > 0.5) vocabScore = 15;
+            else vocabScore = 10;
+
+            // Check for good vocabulary
+            const goodWords = ['because', 'however', 'although', 'therefore', 'moreover', 'furthermore', 'in addition', 'for example', 'such as', 'while', 'since', 'despite'];
+            const usedGoodWords = goodWords.filter(w => lowerText.includes(w));
+            vocabScore += Math.min(5, usedGoodWords.length);
+            vocabScore = Math.min(25, vocabScore);
+
+            // Structure score (0-25)
+            let structureScore = 0;
+
+            // Check for introduction
+            if (sentences.length >= 3) structureScore += 5;
+
+            // Check for linking words
+            const linkingWords = ['first', 'second', 'third', 'finally', 'then', 'after that', 'in conclusion', 'to sum up', 'on the one hand', 'on the other hand'];
+            const usedLinking = linkingWords.filter(w => lowerText.includes(w));
+            structureScore += Math.min(10, usedLinking.length * 2);
+
+            // Check for paragraphs (multiple sentences)
+            if (sentences.length >= 5) structureScore += 5;
+            if (sentences.length >= 8) structureScore += 5;
+
+            structureScore = Math.min(25, structureScore);
+
+            const totalScore = wordScore + grammarScore + vocabScore + structureScore;
+            const percentage = Math.round((totalScore / 100) * 100);
+
+            let grade = '', feedback = '', emoji = '';
+            if (percentage >= 90) { grade = 'Xuất sắc'; emoji = '🏆'; feedback = 'Bài viết rất tốt! Bạn đã sử dụng từ vựng phong phú, ngữ pháp chính xác và cấu trúc rõ ràng.'; }
+            else if (percentage >= 75) { grade = 'Giỏi'; emoji = '🌟'; feedback = 'Bài viết tốt! Hãy tiếp tục phát huy và chú ý thêm về cấu trúc bài viết.'; }
+            else if (percentage >= 60) { grade = 'Khá'; emoji = '👍'; feedback = 'Bài viết khá ổn. Hãy cải thiện thêm về từ vựng và sử dụng nhiều từ nối hơn.'; }
+            else if (percentage >= 45) { grade = 'Trung bình'; emoji = '📝'; feedback = 'Bài viết cần cải thiện. Hãy chú ý đến ngữ pháp, độ dài và cấu trúc bài viết.'; }
+            else { grade = 'Cần cố gắng'; emoji = '💪'; feedback = 'Hãy viết lại bài này. Chú ý viết đủ số từ, sử dụng thì chính xác và thêm từ nối.'; }
+
+            return {
+                totalScore,
+                percentage,
+                grade,
+                emoji,
+                feedback,
+                details: {
+                    wordCount: { score: wordScore, target: targetWords, actual: wordCount },
+                    grammar: { score: grammarScore, max: 25 },
+                    vocabulary: { score: vocabScore, max: 25, unique: uniqueWords.size, goodWords: usedGoodWords },
+                    structure: { score: structureScore, max: 25, sentences: sentences.length, linkingWords: usedLinking }
+                },
+                suggestions: []
+            };
+        }
+
+        // ========== COMPONENTS ==========
+        function App() {
+            const [page, setPage] = useState('home');
+            const [selectedTopic, setSelectedTopic] = useState(null);
+            const [selectedTest, setSelectedTest] = useState(null);
+            const [selectedPrompt, setSelectedPrompt] = useState(null);
+            const [completed, setCompleted] = useState({});
+            const [testResults, setTestResults] = useState({});
+            const [writingResults, setWritingResults] = useState({});
+
+            useEffect(() => {
+                const saved = localStorage.getItem('ep-progress');
+                const savedTests = localStorage.getItem('ep-tests');
+                const savedWriting = localStorage.getItem('ep-writing');
+                if (saved) try { setCompleted(JSON.parse(saved)); } catch(e) {}
+                if (savedTests) try { setTestResults(JSON.parse(savedTests)); } catch(e) {}
+                if (savedWriting) try { setWritingResults(JSON.parse(savedWriting)); } catch(e) {}
+            }, []);
+
+            const save = (id, score) => {
+                const n = {...completed, [id]: score};
+                setCompleted(n);
+                localStorage.setItem('ep-progress', JSON.stringify(n));
+            };
+
+            const saveTest = (id, score, total) => {
+                const n = {...testResults, [id]: {score, total}};
+                setTestResults(n);
+                localStorage.setItem('ep-tests', JSON.stringify(n));
+            };
+
+            const saveWriting = (id, result) => {
+                const n = {...writingResults, [id]: result};
+                setWritingResults(n);
+                localStorage.setItem('ep-writing', JSON.stringify(n));
+            };
+
+            if (page === 'exercise' && selectedTopic) return <ExercisePage topic={selectedTopic} onComplete={save} onBack={() => setPage('home')} />;
+            if (page === 'test-list') return <TestListPage tests={tests} results={testResults} onSelect={t => {setSelectedTest(t); setPage('test');}} onBack={() => setPage('home')} />;
+            if (page === 'test' && selectedTest) return <TestPage test={selectedTest} onComplete={saveTest} onBack={() => setPage('test-list')} />;
+            if (page === 'writing-list') return <WritingListPage prompts={writingPrompts} results={writingResults} onSelect={p => {setSelectedPrompt(p); setPage('writing');}} onBack={() => setPage('home')} />;
+            if (page === 'writing' && selectedPrompt) return <WritingPage prompt={selectedPrompt} result={writingResults[selectedPrompt.id]} onSave={saveWriting} onBack={() => setPage('writing-list')} />;
+
+            return <HomePage topics={topics} onSelect={t => {setSelectedTopic(t); setPage('exercise');}} onGoToTests={() => setPage('test-list')} onGoToWriting={() => setPage('writing-list')} completed={completed} writingResults={writingResults} />;
+        }
+
+        function HomePage({ topics, onSelect, onGoToTests, onGoToWriting, completed, writingResults }) {
+            const [filter, setFilter] = useState('all');
+            const filtered = topics.filter(t => filter === 'all' || t.level === filter);
+            const done = Object.keys(completed).length;
+            const writingDone = Object.keys(writingResults).length;
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+                    <header className="bg-white shadow-sm border-b">
+                        <div className="max-w-6xl mx-auto px-4 py-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h1 className="text-3xl font-bold">📚 English Practice A2-B1</h1>
+                                    <p className="text-gray-500 mt-1">Luyện tập • Kiểm tra • Viết văn</p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <button onClick={onGoToWriting} className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 shadow-lg flex items-center gap-2">
+                                        <span>✍️</span>
+                                        <span>Viết văn</span>
+                                    </button>
+                                    <button onClick={onGoToTests} className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 shadow-lg flex items-center gap-2">
+                                        <span>📝</span>
+                                        <span>Kiểm tra</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="mt-4 grid grid-cols-2 gap-4">
+                                <div>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span className="text-gray-600">Bài tập: {done}/20</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{width: `${(done/20)*100}%`}}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span className="text-gray-600">Viết văn: {writingDone}/{writingPrompts.length}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" style={{width: `${(writingDone/writingPrompts.length)*100}%`}}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="max-w-6xl mx-auto px-4 py-6">
+                        {/* Writing banner */}
+                        <div onClick={onGoToWriting} className="mb-6 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-2xl transition-all group">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-3xl">✍️</span>
+                                        <h2 className="text-2xl font-bold">Viết văn & Chấm điểm</h2>
+                                        <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs font-bold">NEW</span>
+                                    </div>
+                                    <p className="text-white/90 text-sm max-w-lg">Luyện viết với 8 đề bài theo cấp độ. Hệ thống chấm điểm tự động dựa trên: độ dài, ngữ pháp, từ vựng, cấu trúc.</p>
+                                </div>
+                                <div className="hidden md:flex items-center gap-3">
+                                    <div className="text-center bg-white/10 rounded-xl p-3">
+                                        <div className="text-2xl font-bold">8</div>
+                                        <div className="text-xs opacity-80">Đề bài</div>
+                                    </div>
+                                    <div className="text-3xl group-hover:translate-x-2 transition-transform">→</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Test banner */}
+                        <div onClick={onGoToTests} className="mb-8 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-2xl transition-all group">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-3xl">📝</span>
+                                        <h2 className="text-2xl font-bold">Làm bài kiểm tra</h2>
+                                    </div>
+                                    <p className="text-white/90 text-sm max-w-lg">Kiểm tra trình độ với 6 bài test! Có đồng hồ đếm ngược, đủ 5 dạng bài và kết quả chi tiết.</p>
+                                </div>
+                                <div className="hidden md:flex items-center gap-3">
+                                    <div className="text-center bg-white/10 rounded-xl p-3">
+                                        <div className="text-2xl font-bold">6</div>
+                                        <div className="text-xs opacity-80">Bài test</div>
+                                    </div>
+                                    <div className="text-3xl group-hover:translate-x-2 transition-transform">→</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 mb-6 flex-wrap">
+                            {['all', 'A2', 'B1', 'B1+'].map(l => (
+                                <button key={l} onClick={() => setFilter(l)} className={`px-4 py-2 rounded-full text-sm font-medium ${filter === l ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border'}`}>
+                                    {l === 'all' ? 'Tất cả' : l}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                            {filtered.map((t, i) => {
+                                const s = completed[t.id];
+                                const done = s !== undefined;
+                                const pct = done ? Math.round((s/t.questions.length)*100) : 0;
+                                return (
+                                    <div key={t.id} onClick={() => onSelect(t)} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all cursor-pointer border hover:border-blue-200 overflow-hidden">
+                                        <div className="h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+                                        <div className="p-5">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <span className="text-3xl">{t.icon}</span>
+                                                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${t.level === 'B1+' ? 'bg-red-100 text-red-700' : t.level === 'B1' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                                    {t.level}
+                                                </span>
+                                            </div>
+                                            <h3 className="text-base font-bold text-gray-800">#{i+1} {t.title}</h3>
+                                            <p className="text-xs text-gray-500 mt-1">{t.description}</p>
+                                            <div className="flex flex-wrap gap-1 mt-3">
+                                                <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">✅ Chọn</span>
+                                                <span className="text-[10px] px-1.5 py-0.5 bg-green-100 text-green-700 rounded">✍️ Viết</span>
+                                                <span className="text-[10px] px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">🔗 Nối</span>
+                                                <span className="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded">🎧 Nghe</span>
+                                                <span className="text-[10px] px-1.5 py-0.5 bg-pink-100 text-pink-700 rounded">🗣️ Nói</span>
+                                            </div>
+                                            {done && (
+                                                <div className="mt-3">
+                                                    <div className="flex justify-between text-sm">
+                                                        <span className="text-gray-400">{t.questions.length} câu</span>
+                                                        <span className={`font-semibold ${pct >= 70 ? 'text-green-600' : pct >= 50 ? 'text-yellow-600' : 'text-red-500'}`}>{s}/{t.questions.length}</span>
+                                                    </div>
+                                                    <div className="mt-1 w-full bg-gray-100 rounded-full h-1.5">
+                                                        <div className={`h-1.5 rounded-full ${pct >= 70 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-400'}`} style={{width: `${pct}%`}}></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function TestListPage({ tests, results, onSelect, onBack }) {
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+                    <header className="bg-white shadow-sm border-b">
+                        <div className="max-w-6xl mx-auto px-4 py-6">
+                            <button onClick={onBack} className="text-gray-600 hover:text-gray-800 mb-2">← Quay về trang chủ</button>
+                            <h1 className="text-3xl font-bold">📝 Bài kiểm tra</h1>
+                            <p className="text-gray-500 mt-1">Chọn bài kiểm tra phù hợp với trình độ của bạn</p>
+                        </div>
+                    </header>
+                    <div className="max-w-6xl mx-auto px-4 py-6">
+                        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white mb-8 shadow-lg">
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="text-3xl">🎯</span>
+                                <h2 className="text-xl font-bold">Hướng dẫn làm bài kiểm tra</h2>
+                            </div>
+                            <ul className="text-sm space-y-1 opacity-95">
+                                <li>• Mỗi bài có đồng hồ đếm ngược, hãy quản lý thời gian tốt</li>
+                                <li>• Trả lời đầy đủ 5 dạng: Chọn, Viết, Nối, Nghe, Nói</li>
+                                <li>• Kết quả chi tiết sẽ hiển thị sau khi nộp bài</li>
+                            </ul>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {tests.map(test => {
+                                const result = results[test.id];
+                                const hasResult = result !== undefined;
+                                const pct = hasResult ? Math.round((result.score / result.total) * 100) : 0;
+                                return (
+                                    <div key={test.id} onClick={() => onSelect(test)} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all cursor-pointer border hover:border-indigo-200 overflow-hidden">
+                                        <div className="h-2 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+                                        <div className="p-6">
+                                            <div className="flex items-start justify-between mb-3">
+                                                <span className="text-4xl">{test.icon}</span>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${test.level === 'B1+' ? 'bg-red-100 text-red-700' : test.level === 'B1' ? 'bg-indigo-100 text-indigo-700' : test.level.includes('-') ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}`}>{test.level}</span>
+                                            </div>
+                                            <h3 className="text-lg font-bold text-gray-800">{test.title}</h3>
+                                            <p className="text-sm text-gray-500 mt-1">{test.desc}</p>
+                                            <div className="mt-4 flex items-center justify-between text-sm">
+                                                <span className="text-gray-400">📊 20 câu</span>
+                                                <span className="text-gray-400">⏱️ {test.duration} phút</span>
+                                            </div>
+                                            {hasResult && (
+                                                <div className="mt-4">
+                                                    <div className="flex justify-between mb-1">
+                                                        <span className={`text-sm font-semibold ${pct >= 75 ? 'text-green-600' : pct >= 60 ? 'text-blue-600' : pct >= 45 ? 'text-orange-600' : 'text-red-500'}`}>Điểm: {result.score}/{result.total} ({pct}%)</span>
+                                                    </div>
+                                                    <div className="w-full bg-gray-100 rounded-full h-2">
+                                                        <div className={`h-2 rounded-full ${pct >= 75 ? 'bg-green-500' : pct >= 60 ? 'bg-blue-500' : pct >= 45 ? 'bg-orange-500' : 'bg-red-400'}`} style={{width: `${pct}%`}}></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <button className="mt-4 w-full py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 text-sm">{hasResult ? 'Làm lại' : 'Bắt đầu kiểm tra'} →</button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function WritingListPage({ prompts, results, onSelect, onBack }) {
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50">
+                    <header className="bg-white shadow-sm border-b">
+                        <div className="max-w-6xl mx-auto px-4 py-6">
+                            <button onClick={onBack} className="text-gray-600 hover:text-gray-800 mb-2">← Quay về trang chủ</button>
+                            <h1 className="text-3xl font-bold">✍️ Viết văn & Chấm điểm</h1>
+                            <p className="text-gray-500 mt-1">Luyện viết với hệ thống chấm điểm tự động</p>
+                        </div>
+                    </header>
+                    <div className="max-w-6xl mx-auto px-4 py-6">
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 text-white mb-8 shadow-lg">
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="text-3xl">📝</span>
+                                <h2 className="text-xl font-bold">Hướng dẫn viết văn</h2>
+                            </div>
+                            <ul className="text-sm space-y-1 opacity-95">
+                                <li>• Chọn đề bài phù hợp với trình độ của bạn</li>
+                                <li>• Viết bài theo yêu cầu và gợi ý</li>
+                                <li>• Hệ thống sẽ chấm điểm dựa trên: độ dài, ngữ pháp, từ vựng, cấu trúc</li>
+                                <li>• Nhận phản hồi chi tiết và gợi ý cải thiện</li>
+                            </ul>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {prompts.map(prompt => {
+                                const result = results[prompt.id];
+                                const hasResult = result !== undefined;
+                                return (
+                                    <div key={prompt.id} onClick={() => onSelect(prompt)} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all cursor-pointer border hover:border-green-200 overflow-hidden">
+                                        <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+                                        <div className="p-6">
+                                            <div className="flex items-start justify-between mb-3">
+                                                <span className="text-4xl">{prompt.icon}</span>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${prompt.level === 'B1+' ? 'bg-red-100 text-red-700' : prompt.level === 'B1' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}`}>{prompt.level}</span>
+                                            </div>
+                                            <h3 className="text-lg font-bold text-gray-800">{prompt.title}</h3>
+                                            <p className="text-sm text-gray-500 mt-2">{prompt.prompt}</p>
+                                            <div className="mt-4 flex items-center justify-between text-sm">
+                                                <span className="text-gray-400">📝 ~{prompt.wordCount} từ</span>
+                                            </div>
+                                            {hasResult && (
+                                                <div className="mt-4">
+                                                    <div className="flex justify-between mb-1">
+                                                        <span className={`text-sm font-semibold ${result.percentage >= 75 ? 'text-green-600' : result.percentage >= 60 ? 'text-blue-600' : result.percentage >= 45 ? 'text-orange-600' : 'text-red-500'}`}>Điểm: {result.percentage}%</span>
+                                                        <span className="text-sm text-gray-500">{result.grade}</span>
+                                                    </div>
+                                                    <div className="w-full bg-gray-100 rounded-full h-2">
+                                                        <div className={`h-2 rounded-full ${result.percentage >= 75 ? 'bg-green-500' : result.percentage >= 60 ? 'bg-blue-500' : result.percentage >= 45 ? 'bg-orange-500' : 'bg-red-400'}`} style={{width: `${result.percentage}%`}}></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <button className="mt-4 w-full py-2 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 text-sm">{hasResult ? 'Viết lại' : 'Bắt đầu viết'} →</button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function WritingPage({ prompt, result, onSave, onBack }) {
+            const [text, setText] = useState('');
+            const [showResult, setShowResult] = useState(false);
+            const [currentResult, setCurrentResult] = useState(result);
+
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+
+            const handleSubmit = () => {
+                if (wordCount < 20) {
+                    alert('Bài viết quá ngắn! Hãy viết ít nhất 20 từ.');
+                    return;
+                }
+                const result = gradeWriting(text, prompt);
+                setCurrentResult(result);
+                setShowResult(true);
+                onSave(prompt.id, result);
+            };
+
+            if (showResult && currentResult) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50 py-8 px-4">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="bg-white rounded-3xl shadow-xl p-8 mb-6">
+                                <div className="text-center mb-6">
+                                    <div className="text-6xl mb-4">{currentResult.emoji}</div>
+                                    <h2 className="text-3xl font-bold mb-2">Kết quả chấm điểm</h2>
+                                    <p className="text-gray-500 mb-6">{prompt.title}</p>
+                                    <div className={`text-6xl font-bold mb-2 ${currentResult.percentage >= 75 ? 'text-green-500' : currentResult.percentage >= 60 ? 'text-blue-500' : currentResult.percentage >= 45 ? 'text-orange-500' : 'text-red-500'}`}>
+                                        {currentResult.percentage}%
+                                    </div>
+                                    <div className={`text-xl font-semibold ${currentResult.percentage >= 75 ? 'text-green-500' : currentResult.percentage >= 60 ? 'text-blue-500' : currentResult.percentage >= 45 ? 'text-orange-500' : 'text-red-500'}`}>
+                                        {currentResult.grade}
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                                    <p className="text-gray-700">{currentResult.feedback}</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                    <div className="bg-blue-50 rounded-xl p-4">
+                                        <div className="text-2xl font-bold text-blue-700">{currentResult.details.wordCount.score}/25</div>
+                                        <div className="text-xs text-blue-600 mt-1">Độ dài</div>
+                                        <div className="text-xs text-gray-500 mt-1">{currentResult.details.wordCount.actual}/{currentResult.details.wordCount.target} từ</div>
+                                    </div>
+                                    <div className="bg-green-50 rounded-xl p-4">
+                                        <div className="text-2xl font-bold text-green-700">{currentResult.details.grammar.score}/25</div>
+                                        <div className="text-xs text-green-600 mt-1">Ngữ pháp</div>
+                                    </div>
+                                    <div className="bg-purple-50 rounded-xl p-4">
+                                        <div className="text-2xl font-bold text-purple-700">{currentResult.details.vocabulary.score}/25</div>
+                                        <div className="text-xs text-purple-600 mt-1">Từ vựng</div>
+                                        <div className="text-xs text-gray-500 mt-1">{currentResult.details.vocabulary.unique} từ khác nhau</div>
+                                    </div>
+                                    <div className="bg-orange-50 rounded-xl p-4">
+                                        <div className="text-2xl font-bold text-orange-700">{currentResult.details.structure.score}/25</div>
+                                        <div className="text-xs text-orange-600 mt-1">Cấu trúc</div>
+                                        <div className="text-xs text-gray-500 mt-1">{currentResult.details.structure.sentences} câu</div>
+                                    </div>
+                                </div>
+
+                                {currentResult.details.vocabulary.goodWords.length > 0 && (
+                                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                                        <p className="text-sm font-semibold text-green-800 mb-2">✅ Từ vựng tốt đã sử dụng:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {currentResult.details.vocabulary.goodWords.map((word, idx) => (
+                                                <span key={idx} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">{word}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {currentResult.details.structure.linkingWords.length > 0 && (
+                                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                                        <p className="text-sm font-semibold text-blue-800 mb-2">🔗 Từ nối đã sử dụng:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {currentResult.details.structure.linkingWords.map((word, idx) => (
+                                                <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">{word}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                                    <p className="text-sm font-semibold text-gray-700 mb-3">📝 Bài viết của bạn:</p>
+                                    <p className="text-gray-700 whitespace-pre-wrap">{text}</p>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button onClick={onBack} className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200">← Về danh sách</button>
+                                    <button onClick={() => { setShowResult(false); setText(''); }} className="flex-1 px-6 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700">Viết lại 🔄</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50">
+                    <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+                        <div className="max-w-4xl mx-auto px-4 py-4">
+                            <div className="flex justify-between items-center">
+                                <button onClick={onBack} className="text-gray-600 hover:text-gray-800">← Quay lại</button>
+                                <div className="flex items-center gap-4">
+                                    <span className={`text-sm font-medium ${wordCount >= prompt.wordCount * 0.9 ? 'text-green-600' : wordCount >= prompt.wordCount * 0.5 ? 'text-orange-600' : 'text-gray-500'}`}>
+                                        {wordCount} / {prompt.wordCount} từ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto px-4 py-8">
+                        <div className="bg-white rounded-2xl shadow-sm border p-6 md:p-8 mb-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="text-3xl">{prompt.icon}</span>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-800">{prompt.title}</h2>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${prompt.level === 'B1+' ? 'bg-red-100 text-red-700' : prompt.level === 'B1' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}`}>{prompt.level}</span>
+                                </div>
+                            </div>
+
+                            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6">
+                                <p className="text-sm font-semibold text-blue-800 mb-2">📋 Yêu cầu:</p>
+                                <p className="text-sm text-gray-700">{prompt.prompt}</p>
+                            </div>
+
+                            <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4 mb-6">
+                                <p className="text-sm font-semibold text-yellow-800 mb-2">💡 Gợi ý:</p>
+                                <ul className="text-sm text-gray-700 space-y-1">
+                                    {prompt.tips.map((tip, idx) => <li key={idx}>• {tip}</li>)}
+                                </ul>
+                            </div>
+
+                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
+                                <p className="text-sm font-semibold text-gray-700 mb-2">📝 Ví dụ mẫu:</p>
+                                <p className="text-sm text-gray-600 italic">{prompt.example}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-2xl shadow-sm border p-6 md:p-8">
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">Viết bài của bạn:</label>
+                            <textarea
+                                value={text}
+                                onChange={e => setText(e.target.value)}
+                                placeholder="Bắt đầu viết bài của bạn ở đây..."
+                                className="w-full h-64 p-4 border-2 border-gray-200 rounded-xl text-gray-700 focus:border-green-400 focus:ring-2 focus:ring-green-200 outline-none resize-none"
+                            />
+                            <div className="mt-4 flex justify-between items-center">
+                                <div className="text-sm text-gray-500">
+                                    {wordCount < prompt.wordCount * 0.5 ? '⚠️ Hãy viết thêm' : wordCount < prompt.wordCount * 0.9 ? '👍 Gần đạt mục tiêu' : '✓ Đạt yêu cầu'}
+                                </div>
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={wordCount < 20}
+                                    className="px-8 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                                >
+                                    Nộp bài & Chấm điểm ✓
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function TestPage({ test, onComplete, onBack }) {
+            const [questions] = useState(() => getTestQuestions(test.id));
+            const [qIdx, setQIdx] = useState(0);
+            const [sel, setSel] = useState(null);
+            const [fill, setFill] = useState('');
+            const [match, setMatch] = useState({});
+            const [recorded, setRecorded] = useState(false);
+            const [answers, setAnswers] = useState([]);
+            const [timeLeft, setTimeLeft] = useState(test.duration * 60);
+            const [showResult, setShowResult] = useState(false);
+
+            const q = questions[qIdx];
+            const total = questions.length;
+
+            useEffect(() => {
+                if (showResult) return;
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 1) {
+                            clearInterval(timer);
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [showResult]);
+
+            useEffect(() => {
+                if (timeLeft === 0 && !showResult) finishTest();
+            }, [timeLeft]);
+
+            const formatTime = (s) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+
+            const checkAnswer = () => {
+                if (q.type === 'fb') return fill.trim().toLowerCase() === q.ans.toLowerCase();
+                if (q.type === 'match') return q.left.every((l, i) => { const r = match[i]; return r !== undefined && q.ans.includes(`${l}-${q.right[r]}`); });
+                if (q.type === 'speak') return recorded;
+                return sel === q.ans;
+            };
+
+            const saveAnswer = () => {
+                const correct = checkAnswer();
+                setAnswers([...answers, { correct, q }]);
+            };
+
+            const next = () => {
+                saveAnswer();
+                if (qIdx < total - 1) {
+                    setQIdx(qIdx + 1);
+                    setSel(null); setFill(''); setMatch({}); setRecorded(false);
+                } else {
+                    finishTest();
+                }
+            };
+
+            const finishTest = () => {
+                if (answers.length < qIdx + 1) saveAnswer();
+                setShowResult(true);
+                const finalAnswers = answers.length >= total ? answers : [...answers.slice(0, qIdx), { correct: checkAnswer(), q }];
+                const score = finalAnswers.filter(a => a.correct).length;
+                onComplete(test.id, score, total);
+            };
+
+            const canCheck = () => {
+                if (q.type === 'mc' || q.type === 'listen') return sel !== null;
+                if (q.type === 'fb') return fill.trim().length > 0;
+                if (q.type === 'match') return q.left.every((_, i) => match[i] !== undefined);
+                if (q.type === 'speak') return recorded;
+                return false;
+            };
+
+            const play = () => {
+                if (!q.audio || !window.speechSynthesis) return;
+                const u = new SpeechSynthesisUtterance(q.audio);
+                u.lang = 'en-US'; u.rate = 0.9;
+                speechSynthesis.speak(u);
+            };
+
+            if (showResult) {
+                const score = answers.filter(a => a.correct).length;
+                const pct = Math.round((score / total) * 100);
+                const timeUsed = test.duration * 60 - timeLeft;
+                let grade = '', emoji = '', color = '';
+                if (pct >= 90) { grade = 'Xuất sắc'; emoji = '🏆'; color = 'text-yellow-500'; }
+                else if (pct >= 75) { grade = 'Giỏi'; emoji = '🌟'; color = 'text-green-500'; }
+                else if (pct >= 60) { grade = 'Khá'; emoji = '👍'; color = 'text-blue-500'; }
+                else if (pct >= 45) { grade = 'Trung bình'; emoji = '📝'; color = 'text-orange-500'; }
+                else { grade = 'Cần cải thiện'; emoji = '💪'; color = 'text-red-500'; }
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 px-4">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="bg-white rounded-3xl shadow-xl p-8 mb-6 text-center">
+                                <div className="text-6xl mb-4">{emoji}</div>
+                                <h2 className="text-3xl font-bold mb-2">Kết quả kiểm tra</h2>
+                                <p className="text-gray-500 mb-6">{test.title}</p>
+                                <div className={`text-6xl font-bold ${color} mb-2`}>{score}/{total}</div>
+                                <div className={`text-xl font-semibold ${color} mb-4`}>{grade} ({pct}%)</div>
+                                <div className="w-full bg-gray-200 rounded-full h-4 mb-6">
+                                    <div className={`h-4 rounded-full ${pct >= 75 ? 'bg-green-500' : pct >= 60 ? 'bg-blue-500' : pct >= 45 ? 'bg-orange-500' : 'bg-red-500'}`} style={{width: `${pct}%`}}></div>
+                                </div>
+                                <div className="grid grid-cols-3 gap-4 mb-6">
+                                    <div className="bg-blue-50 rounded-xl p-3">
+                                        <div className="text-2xl font-bold text-blue-700">{score}</div>
+                                        <div className="text-xs text-blue-600">Đúng</div>
+                                    </div>
+                                    <div className="bg-red-50 rounded-xl p-3">
+                                        <div className="text-2xl font-bold text-red-700">{total - score}</div>
+                                        <div className="text-xs text-red-600">Sai</div>
+                                    </div>
+                                    <div className="bg-purple-50 rounded-xl p-3">
+                                        <div className="text-2xl font-bold text-purple-700">{formatTime(timeUsed)}</div>
+                                        <div className="text-xs text-purple-600">Thời gian</div>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3">
+                                    <button onClick={onBack} className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200">← Về danh sách</button>
+                                    <button onClick={onBack} className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">Làm bài khác 🔄</button>
+                                </div>
+                            </div>
+                            <div className="bg-white rounded-2xl shadow-sm p-6">
+                                <h3 className="text-xl font-bold mb-4">📋 Chi tiết từng câu</h3>
+                                <div className="space-y-4">
+                                    {answers.map((ans, idx) => (
+                                        <div key={idx} className={`p-4 rounded-xl border-2 ${ans.correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                                            <div className="flex items-start gap-3">
+                                                <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${ans.correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>{idx + 1}</span>
+                                                <div className="flex-1">
+                                                    <p className="font-medium mb-1">{ans.q.q}</p>
+                                                    {!ans.correct && (
+                                                        <div className="text-sm">
+                                                            {(ans.q.type === 'mc' || ans.q.type === 'listen') && <p className="text-red-700">Đáp án đúng: <strong>{ans.q.opts?.[ans.q.ans]}</strong></p>}
+                                                            {ans.q.type === 'fb' && <p className="text-red-700">Đáp án đúng: <strong>{ans.q.ans}</strong></p>}
+                                                            {ans.q.exp && <p className="text-gray-600 mt-1">💡 {ans.q.exp}</p>}
+                                                        </div>
+                                                    )}
+                                                    {ans.correct && ans.q.exp && <p className="text-sm text-green-700">💡 {ans.q.exp}</p>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+                    <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+                        <div className="max-w-3xl mx-auto px-4 py-4">
+                            <div className="flex justify-between mb-3">
+                                <button onClick={() => { if (confirm('Thoát? Tiến độ sẽ mất.')) onBack(); }} className="text-gray-600">← Thoát</button>
+                                <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold ${timeLeft < 60 ? 'bg-red-100 text-red-700 animate-pulse' : timeLeft < 300 ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                                    <span>⏱️</span>
+                                    <span>{formatTime(timeLeft)}</span>
+                                </div>
+                                <span className="text-sm text-gray-500">{qIdx+1}/{total}</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{width: `${((qIdx+1)/total)*100}%`}}></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="max-w-3xl mx-auto px-4 py-8">
+                        <div className="bg-white rounded-2xl shadow-sm border p-6 md:p-8">
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${q.type === 'mc' ? 'bg-blue-100 text-blue-700' : q.type === 'fb' ? 'bg-green-100 text-green-700' : q.type === 'match' ? 'bg-purple-100 text-purple-700' : q.type === 'listen' ? 'bg-orange-100 text-orange-700' : 'bg-pink-100 text-pink-700'}`}>
+                                    {q.type === 'mc' ? '✅ Chọn đáp án' : q.type === 'fb' ? '✍️ Điền từ' : q.type === 'match' ? '🔗 Nối từ' : q.type === 'listen' ? '🎧 Nghe hiểu' : '🗣️ Nói'}
+                                </span>
+                            </div>
+                            {q.type === 'listen' && q.audio && (
+                                <div className="bg-orange-50 border border-orange-100 rounded-xl p-5 mb-6">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className="text-xl">🎧</span>
+                                        <span className="font-semibold text-orange-800">Bài nghe</span>
+                                    </div>
+                                    <button onClick={play} className="px-5 py-2.5 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600">▶ Nghe</button>
+                                </div>
+                            )}
+                            <h2 className="text-xl font-bold text-gray-800 mb-6">{q.q}</h2>
+                            {(q.type === 'mc' || q.type === 'listen') && q.opts && (
+                                <div className="space-y-3">
+                                    {q.opts.map((o, i) => (
+                                        <button key={i} onClick={() => setSel(i)} className={`w-full text-left p-4 rounded-xl border-2 ${i === sel ? 'border-blue-400 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
+                                            <div className="flex items-center gap-3">
+                                                <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${i === sel ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>{String.fromCharCode(65+i)}</span>
+                                                <span className="text-gray-700 font-medium">{o}</span>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            {q.type === 'fb' && (
+                                <input type="text" value={fill} onChange={e => setFill(e.target.value)} placeholder="Nhập câu trả lời..." className="w-full p-4 rounded-xl border-2 border-gray-200 text-lg focus:border-blue-400 outline-none" />
+                            )}
+                            {q.type === 'match' && (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        {q.left.map((l, i) => (
+                                            <div key={i} className={`p-3 rounded-xl border-2 ${match[i] !== undefined ? 'border-blue-400 bg-blue-50' : 'border-gray-200'}`}>
+                                                <span className="font-medium">{l}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="space-y-2">
+                                        {q.left.map((_, i) => (
+                                            <select key={i} value={match[i] ?? ''} onChange={e => setMatch({...match, [i]: parseInt(e.target.value)})} className="w-full p-3 rounded-xl border-2 border-gray-200 bg-white">
+                                                <option value="">-- Chọn --</option>
+                                                {q.right.map((r, ri) => <option key={ri} value={ri}>{r}</option>)}
+                                            </select>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {q.type === 'speak' && (
+                                <div className="space-y-4">
+                                    {q.prompt && <div className="bg-pink-50 border border-pink-100 rounded-xl p-4"><p className="text-sm text-gray-700">{q.prompt}</p></div>}
+                                    <div className="bg-gray-50 rounded-xl p-5 border">
+                                        <button onClick={() => setRecorded(true)} className="px-5 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600">🎤 Ghi âm (demo)</button>
+                                        {recorded && <p className="mt-3 text-sm text-green-600">✓ Đã ghi âm!</p>}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="mt-8 flex justify-end">
+                                <button onClick={next} disabled={!canCheck()} className="px-8 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 shadow-lg">
+                                    {qIdx < total - 1 ? 'Câu tiếp →' : 'Nộp bài 🎯'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+ 
+        function ExercisePage({ topic, onComplete, onBack }) {
+            const [qIdx, setQIdx] = useState(0);
+            const [sel, setSel] = useState(null);
+            const [fill, setFill] = useState('');
+            const [match, setMatch] = useState({});
+            const [answered, setAnswered] = useState(false);
+            const [score, setScore] = useState(0);
+            const [answers, setAnswers] = useState([]);
+            const [showResult, setShowResult] = useState(false);
+            const [recorded, setRecorded] = useState(false);
+
+            const q = topic.questions[qIdx];
+            const total = topic.questions.length;
+
+            const check = () => {
+                let ok = false;
+                if (q.type === 'fb') ok = fill.trim().toLowerCase() === q.ans.toLowerCase();
+                else if (q.type === 'match') ok = q.left.every((l, i) => { const r = match[i]; return r !== undefined && q.ans.includes(`${l}-${q.right[r]}`); });
+                else if (q.type === 'speak') ok = recorded;
+                else ok = sel === q.ans;
+                if (ok) setScore(score + 1);
+                setAnswers([...answers, ok]);
+                setAnswered(true);
+            };
+
+            const next = () => {
+                if (qIdx < total - 1) {
+                    setQIdx(qIdx + 1);
+                    setSel(null); setFill(''); setMatch({}); setAnswered(false); setRecorded(false);
+                } else {
+                    setShowResult(true);
+                    onComplete(topic.id, score);
+                }
+            };
+
+            const canCheck = () => {
+                if (q.type === 'mc' || q.type === 'listen') return sel !== null;
+                if (q.type === 'fb') return fill.trim().length > 0;
+                if (q.type === 'match') return q.left.every((_, i) => match[i] !== undefined);
+                if (q.type === 'speak') return recorded;
+                return false;
+            };
+
+            const play = () => {
+                if (!q.audio || !window.speechSynthesis) return;
+                const u = new SpeechSynthesisUtterance(q.audio);
+                u.lang = 'en-US'; u.rate = 0.9;
+                speechSynthesis.speak(u);
+            };
+
+            if (showResult) {
+                const pct = Math.round((score/total)*100);
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full text-center">
+                            <div className="text-6xl mb-4">{pct >= 70 ? '🏆' : pct >= 50 ? '🌟' : '💪'}</div>
+                            <h2 className="text-2xl font-bold mb-2">Kết quả</h2>
+                            <div className={`text-5xl font-bold mb-4 ${pct >= 70 ? 'text-green-500' : pct >= 50 ? 'text-blue-500' : 'text-orange-500'}`}>{score}/{total}</div>
+                            <div className="w-full bg-gray-200 rounded-full h-4 mb-6">
+                                <div className={`h-4 rounded-full ${pct >= 70 ? 'bg-green-500' : pct >= 50 ? 'bg-blue-500' : 'bg-orange-500'}`} style={{width: `${pct}%`}}></div>
+                            </div>
+                            <div className="flex gap-3">
+                                <button onClick={onBack} className="flex-1 px-6 py-3 bg-gray-100 rounded-xl font-medium hover:bg-gray-200">← Về</button>
+                                <button onClick={() => {setQIdx(0); setScore(0); setAnswers([]); setShowResult(false);}} className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">Làm lại 🔄</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+                    <div className="bg-white shadow-sm border-b sticky top-0 z-10">
+                        <div className="max-w-3xl mx-auto px-4 py-4">
+                            <div className="flex justify-between mb-3">
+                                <button onClick={onBack} className="text-gray-600">← Quay lại</button>
+                                <div className="flex gap-3">
+                                    <span className="text-sm text-gray-500">{qIdx+1}/{total}</span>
+                                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">⭐ {score}</span>
+                                </div>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{width: `${((qIdx+1)/total)*100}%`}}></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="max-w-3xl mx-auto px-4 py-8">
+                        <div className="bg-white rounded-2xl shadow-sm border p-6 md:p-8">
+                            <div className="flex items-center gap-2 mb-6">
+                                <span className="text-2xl">{topic.icon}</span>
+                                <span className="text-sm font-medium text-gray-500">{topic.title}</span>
+                            </div>
+                            {q.type === 'listen' && q.audio && (
+                                <div className="bg-orange-50 border border-orange-100 rounded-xl p-5 mb-6">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className="text-xl">🎧</span>
+                                        <span className="font-semibold text-orange-800">Bài nghe</span>
+                                    </div>
+                                    <button onClick={play} className="px-5 py-2.5 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600">▶ Nghe</button>
+                                </div>
+                            )}
+                            <h2 className="text-xl font-bold text-gray-800 mb-6">{q.q}</h2>
+                            {(q.type === 'mc' || q.type === 'listen') && q.opts && (
+                                <div className="space-y-3">
+                                    {q.opts.map((o, i) => (
+                                        <button key={i} onClick={() => !answered && setSel(i)} disabled={answered} className={`w-full text-left p-4 rounded-xl border-2 ${answered ? (i === q.ans ? 'border-green-400 bg-green-50' : i === sel ? 'border-red-400 bg-red-50' : 'border-gray-200 opacity-50') : i === sel ? 'border-blue-400 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}>
+                                            <div className="flex items-center gap-3">
+                                                <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${i === sel ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>{String.fromCharCode(65+i)}</span>
+                                                <span className="text-gray-700 font-medium">{o}</span>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            {q.type === 'fb' && (
+                                <input type="text" value={fill} onChange={e => setFill(e.target.value)} disabled={answered} placeholder="Nhập câu trả lời..." className="w-full p-4 rounded-xl border-2 border-gray-200 text-lg focus:border-blue-400 outline-none" />
+                            )}
+                            {q.type === 'match' && (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        {q.left.map((l, i) => (
+                                            <div key={i} className={`p-3 rounded-xl border-2 ${match[i] !== undefined ? 'border-blue-400 bg-blue-50' : 'border-gray-200'}`}>
+                                                <span className="font-medium">{l}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="space-y-2">
+                                        {q.left.map((_, i) => (
+                                            <select key={i} value={match[i] ?? ''} onChange={e => setMatch({...match, [i]: parseInt(e.target.value)})} disabled={answered} className="w-full p-3 rounded-xl border-2 border-gray-200 bg-white">
+                                                <option value="">-- Chọn --</option>
+                                                {q.right.map((r, ri) => <option key={ri} value={ri}>{r}</option>)}
+                                            </select>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {q.type === 'speak' && (
+                                <div className="space-y-4">
+                                    {q.prompt && <div className="bg-pink-50 border border-pink-100 rounded-xl p-4"><p className="text-sm text-gray-700">{q.prompt}</p></div>}
+                                    <div className="bg-gray-50 rounded-xl p-5 border">
+                                        <button onClick={() => setRecorded(true)} className="px-5 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600">🎤 Ghi âm (demo)</button>
+                                        {recorded && <p className="mt-3 text-sm text-green-600">✓ Đã ghi âm!</p>}
+                                    </div>
+                                </div>
+                            )}
+                            {answered && q.exp && (
+                                <div className="mt-6 p-4 rounded-xl border bg-yellow-50 border-yellow-200">
+                                    <p className="text-sm text-gray-700">💡 {q.exp}</p>
+                                </div>
+                            )}
+                            <div className="mt-8 flex justify-end">
+                                {!answered ? (
+                                    <button onClick={check} disabled={!canCheck()} className="px-8 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50">Kiểm tra ✓</button>
+                                ) : (
+                                    <button onClick={next} className="px-8 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">{qIdx < total - 1 ? 'Câu tiếp →' : 'Xem kết quả 🎯'}</button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

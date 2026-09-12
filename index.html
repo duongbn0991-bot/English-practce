@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📘 Lý thuyết Tiếng Anh A2-B1 | 20 Chủ đề</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { transition: transform 0.3s ease; }
+        @media (max-width: 1024px) {
+            .sidebar { position: fixed; left: 0; top: 0; z-index: 50; transform: translateX(-100%); height: 100vh; }
+            .sidebar.open { transform: translateX(0); }
+        }
+        .topic-content { scroll-behavior: smooth; }
+        .vocab-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .phrase-item { border-left: 3px solid #3b82f6; }
+        .dialogue-a { background: linear-gradient(135deg, #dbeafe, #eff6ff); }
+        .dialogue-b { background: linear-gradient(135deg, #fce7f3, #fdf2f8); }
+        .grammar-box { background: linear-gradient(135deg, #fef3c7, #fffbeb); }
+        .culture-box { background: linear-gradient(135deg, #d1fae5, #ecfdf5); }
+        @media print {
+            .sidebar, .mobile-menu-btn, .back-to-practice, .no-print { display: none !important; }
+            .main-content { margin-left: 0 !important; }
+        }
+        .search-box { position: relative; }
+        .search-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; margin-top: 0.5rem; max-height: 400px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="app"></div>
+
+    <script>
+        // ========== THEORY DATA - 20 TOPICS ==========
+        const theoryData = [
+            {
+                id: 'daily-life',
+                title: 'Daily Life',
+                titleVi: 'Cuộc sống hàng ngày',
+                level: 'A2',
+                icon: '🏠',
+                vocabulary: [
+                    { word: 'wake up', meaning: 'thức dậy', example: 'I wake up at 6:30 every morning.' },
+                    { word: 'get dressed', meaning: 'mặc quần áo', example: 'After waking up, I get dressed quickly.' },
+                    { word: 'have breakfast', meaning: 'ăn sáng', example: 'We have breakfast at 7 AM.' },
+                    { word: 'go to work', meaning: 'đi làm', example: 'He goes to work by bus.' },
+                    { word: 'have lunch', meaning: 'ăn trưa', example: 'I usually have lunch at noon.' },
+                    { word: 'come home', meaning: 'về nhà', example: 'She comes home at 6 PM.' },
+                    { word: 'have dinner', meaning: 'ăn tối', example: 'We have dinner together as a family.' },
+                    { word: 'go to bed', meaning: 'đi ngủ', example: 'I go to bed at 10:30 PM.' },
+                    { word: 'take a shower', meaning: 'tắm', example: 'I take a shower every morning.' },
+                    { word: 'brush teeth', meaning: 'đánh răng', example: 'Remember to brush your teeth before bed.' }
+                ],
+                grammar: {
+                    title: 'Thì hiện tại đơn (Present Simple)',
+                    explanation: 'Dùng để diễn tả thói quen, hành động lặp đi lặp lại',
+                    structure: 'S + V(s/es) + O',
+                    examples: [
+                        'I wake up at 6 AM every day.',
+                        'She goes to school by bus.',
+                        'They don\'t watch TV in the morning.',
+                        'Does he play football on Sundays?'
+                    ],
+                    notes: [
+                        'Thêm "s/es" khi chủ ngữ là ngôi thứ 3 số ít (he, she, it)',
+                        'Dùng "do/does" cho câu phủ định và câu hỏi',
+                        'Dùng với các trạng từ chỉ tần suất: always, usually, often, sometimes, never'
+                    ]
+                },
+                phrases: [
+                    { phrase: 'in the morning/afternoon/evening', meaning: 'vào buổi sáng/chiều/tối' },
+                    { phrase: 'at night', meaning: 'vào ban đêm' },
+                    { phrase: 'on weekdays/weekends', meaning: 'vào ngày thường/cuối tuần' },
+                    { phrase: 'every day/week/month', meaning: 'mỗi ngày/tuần/tháng' }
+                ],
+                dialogue: {
+                    context: 'Two friends talking about their daily routine',
+                    lines: [
+                        { speaker: 'A', text: 'What time do you usually wake up?' },
+                        { speaker: 'B', text: 'I wake up at 6:30 every morning.' },
+                        { speaker: 'A', text: 'That\'s early! What do you do first?' },
+                        { speaker: 'B', text: 'I take a shower and get dressed. Then I have breakfast.' }
+                    ]
+                },
+                culture: 'Ở các nước phương Tây, bữa sáng thường nhẹ (ngũ cốc, bánh mì). Ở Việt Nam, bữa sáng có thể là phở, bún - đầy đủ hơn.'
+            },
+            {
+                id: 'family',
+                title: 'Family & Friends',
+                titleVi: 'Gia đình và bạn bè',
+                level: 'A2',
+                icon: '👨‍👩‍👧‍',
+                vocabulary: [
+                    { word: 'parents', meaning: 'cha mẹ', example: 'My parents are teachers.' },
+                    { word: 'siblings', meaning: 'anh chị em', example: 'I have two siblings.' },
+                    { word: 'grandparents', meaning: 'ông bà', example: 'I visit my grandparents every weekend.' },
+                    { word: 'uncle/aunt', meaning: 'chú bác/cô dì', example: 'My uncle lives in Hanoi.' },
+                    { word: 'cousin', meaning: 'anh chị em họ', example: 'My cousin is the same age as me.' },
+                    { word: 'best friend', meaning: 'bạn thân', example: 'She is my best friend since childhood.' },
+                    { word: 'classmate', meaning: 'bạn cùng lớp', example: 'He is my classmate.' },
+                    { word: 'colleague', meaning: 'đồng nghiệp', example: 'My colleagues are very friendly.' },
+                    { word: 'neighbor', meaning: 'hàng xóm', example: 'Our neighbors are very kind.' },
+                    { word: 'get along with', meaning: 'hòa hợp với', example: 'I get along well with my sister.' }
+                ],
+                grammar: {
+                    title: 'Tính từ sở hữu (Possessive Adjectives)',
+                    explanation: 'Dùng để chỉ sự sở hữu',
+                    structure: 'my, your, his, her, its, our, their + N',
+                    examples: [
+                        'My father is a doctor.',
+                        'Her brother is tall.',
+                        'Their house is big.',
+                        'Our family lives in Ho Chi Minh City.'
+                    ],
+                    notes: [
+                        'my: của tôi',
+                        'your: của bạn',
+                        'his: của anh ấy',
+                        'her: của cô ấy',
+                        'its: của nó',
+                        'our: của chúng tôi',
+                        'their: của họ'
+                    ]
+                },
+                phrases: [
+                    { phrase: 'take after', meaning: 'giống (về ngoại hình/tính cách)' },
+                    { phrase: 'grow up', meaning: 'lớn lên' },
+                    { phrase: 'spend time with', meaning: 'dành thời gian với' },
+                    { phrase: 'hang out with', meaning: 'đi chơi với' }
+                ],
+                dialogue: {
+                    context: 'Talking about family',
+                    lines: [
+                        { speaker: 'A', text: 'Do you have any brothers or sisters?' },
+                        { speaker: 'B', text: 'Yes, I have one older brother and one younger sister.' },
+                        { speaker: 'A', text: 'What does your brother do?' },
+                        { speaker: 'B', text: 'He works as an engineer. He\'s married and has two children.' }
+                    ]
+                },
+                culture: 'Ở Việt Nam, gia đình nhiều thế hệ thường sống chung. Ở phương Tây, con cái thường sống riêng khi trưởng thành.'
+            },
+            {
+                id: 'food',
+                title: 'Food & Restaurant',
+                titleVi: 'Đồ ăn và nhà hàng',
+                level: 'A2',
+                icon: '🍽️',
+                vocabulary: [
+                    { word: 'appetizer/starter', meaning: 'khai vị', example: 'Would you like an appetizer?' },
+                    { word: 'main course', meaning: 'món chính', example: 'The main course is grilled fish.' },
+                    { word: 'dessert', meaning: 'tráng miệng', example: 'We had ice cream for dessert.' },
+                    { word: 'beverage/drink', meaning: 'đồ uống', example: 'What beverage would you like?' },
+                    { word: 'menu', meaning: 'thực đơn', example: 'Can I see the menu, please?' },
+                    { word: 'bill/check', meaning: 'hóa đơn', example: 'Could we have the bill, please?' },
+                    { word: 'reservation', meaning: 'đặt bàn', example: 'I\'d like to make a reservation.' },
+                    { word: 'delicious/tasty', meaning: 'ngon', example: 'This soup is delicious!' },
+                    { word: 'spicy', meaning: 'cay', example: 'Is this dish spicy?' },
+                    { word: 'vegetarian', meaning: 'chay', example: 'Do you have vegetarian options?' }
+                ],
+                grammar: {
+                    title: 'Câu yêu cầu lịch sự (Polite Requests)',
+                    explanation: 'Dùng để yêu cầu trong nhà hàng',
+                    structure: 'Could I/Can I/Would you like...?',
+                    examples: [
+                        'Could I see the menu, please?',
+                        'Can I have a glass of water?',
+                        'Would you like something to drink?',
+                        'May I recommend the special today?'
+                    ],
+                    notes: [
+                        '"Could" lịch sự hơn "Can"',
+                        'Luôn thêm "please" để lịch sự',
+                        '"Would you like" dùng để mời'
+                    ]
+                },
+                phrases: [
+                    { phrase: 'I\'d like to order...', meaning: 'Tôi muốn gọi...' },
+                    { phrase: 'What do you recommend?', meaning: 'Bạn gợi ý món gì?' },
+                    { phrase: 'Is this dish spicy?', meaning: 'Món này có cay không?' },
+                    { phrase: 'Could we have the bill?', meaning: 'Cho tôi xin hóa đơn?' }
+                ],
+                dialogue: {
+                    context: 'Ordering at a restaurant',
+                    lines: [
+                        { speaker: 'Waiter', text: 'Good evening. Are you ready to order?' },
+                        { speaker: 'Customer', text: 'Yes, I\'d like the grilled chicken with rice, please.' },
+                        { speaker: 'Waiter', text: 'Would you like anything to drink?' },
+                        { speaker: 'Customer', text: 'Yes, a glass of orange juice, please.' }
+                    ]
+                },
+                culture: 'Ở Việt Nam, tiền boa không bắt buộc. Ở Mỹ, tiền boa 15-20% là thông lệ. Ở Nhật, tiền boa bị coi là xúc phạm.'
+            },
+            {
+                id: 'travel',
+                title: 'Travel & Transport',
+                titleVi: 'Du lịch và giao thông',
+                level: 'A2',
+                icon: '✈️',
+                vocabulary: [
+                    { word: 'passport', meaning: 'hộ chiếu', example: 'Don\'t forget your passport.' },
+                    { word: 'boarding pass', meaning: 'thẻ lên máy bay', example: 'Show your boarding pass at the gate.' },
+                    { word: 'luggage/baggage', meaning: 'hành lý', example: 'How many pieces of luggage do you have?' },
+                    { word: 'departure', meaning: 'khởi hành', example: 'The departure time is 3 PM.' },
+                    { word: 'arrival', meaning: 'đến nơi', example: 'The arrival time is 6 PM.' },
+                    { word: 'delay', meaning: 'trì hoãn', example: 'The flight is delayed by 2 hours.' },
+                    { word: 'cancel', meaning: 'hủy', example: 'The flight was cancelled due to weather.' },
+                    { word: 'accommodation', meaning: 'chỗ ở', example: 'We booked accommodation online.' },
+                    { word: 'sightseeing', meaning: 'tham quan', example: 'We went sightseeing in the city.' },
+                    { word: 'souvenir', meaning: 'quà lưu niệm', example: 'I bought some souvenirs for my family.' }
+                ],
+                grammar: {
+                    title: 'Thì quá khứ đơn (Past Simple)',
+                    explanation: 'Dùng để kể về chuyến đi đã qua',
+                    structure: 'S + V2/V-ed + O',
+                    examples: [
+                        'I visited London last summer.',
+                        'We stayed at a hotel near the beach.',
+                        'She didn\'t enjoy the trip.',
+                        'Did you have a good time?'
+                    ],
+                    notes: [
+                        'Động từ có quy tắc: thêm -ed (visited, played)',
+                        'Động từ bất quy tắc: thay đổi (go→went, see→saw)',
+                        'Dùng với: yesterday, last week, ago, in 2020'
+                    ]
+                },
+                phrases: [
+                    { phrase: 'go on vacation/holiday', meaning: 'đi nghỉ' },
+                    { phrase: 'book a flight/hotel', meaning: 'đặt vé máy bay/khách sạn' },
+                    { phrase: 'check in/check out', meaning: 'nhận phòng/trả phòng' },
+                    { phrase: 'take photos', meaning: 'chụp ảnh' }
+                ],
+                dialogue: {
+                    context: 'At the airport',
+                    lines: [
+                        { speaker: 'A', text: 'Where are you traveling to?' },
+                        { speaker: 'B', text: 'I\'m going to Tokyo for a week.' },
+                        { speaker: 'A', text: 'How exciting! Is this your first time there?' },
+                        { speaker: 'B', text: 'Yes, it is. I\'m really looking forward to it.' }
+                    ]
+                },
+                culture: 'Khi đi du lịch nước ngoài, nên tìm hiểu văn hóa địa phương. Ở Nhật, không nên tip. Ở Thái Lan, không nên chạm vào đầu người khác.'
+            },
+            {
+                id: 'health',
+                title: 'Health & Body',
+                titleVi: 'Sức khỏe và cơ thể',
+                level: 'A2',
+                icon: '🏥',
+                vocabulary: [
+                    { word: 'headache', meaning: 'đau đầu', example: 'I have a terrible headache.' },
+                    { word: 'fever', meaning: 'sốt', example: 'She has a high fever.' },
+                    { word: 'cough', meaning: 'ho', example: 'He has a bad cough.' },
+                    { word: 'sore throat', meaning: 'đau họng', example: 'I have a sore throat.' },
+                    { word: 'stomachache', meaning: 'đau bụng', example: 'The child has a stomachache.' },
+                    { word: 'medicine', meaning: 'thuốc', example: 'Take this medicine three times a day.' },
+                    { word: 'prescription', meaning: 'đơn thuốc', example: 'The doctor gave me a prescription.' },
+                    { word: 'appointment', meaning: 'cuộc hẹn', example: 'I have an appointment with the doctor.' },
+                    { word: 'symptom', meaning: 'triệu chứng', example: 'What are your symptoms?' },
+                    { word: 'recover', meaning: 'hồi phục', example: 'He recovered quickly from the illness.' }
+                ],
+                grammar: {
+                    title: 'Đưa lời khuyên với Should/Shouldn\'t',
+                    explanation: 'Dùng để đưa ra lời khuyên về sức khỏe',
+                    structure: 'S + should/shouldn\'t + V(infinitive)',
+                    examples: [
+                        'You should drink more water.',
+                        'You shouldn\'t eat too much sugar.',
+                        'She should see a doctor.',
+                        'They shouldn\'t stay up late.'
+                    ],
+                    notes: [
+                        'should: nên',
+                        'shouldn\'t: không nên',
+                        'Theo sau là động từ nguyên thể',
+                        'Có thể dùng "ought to" thay cho "should"'
+                    ]
+                },
+                phrases: [
+                    { phrase: 'feel better/worse', meaning: 'cảm thấy tốt hơn/xấu hơn' },
+                    { phrase: 'get sick/ill', meaning: 'bị ốm' },
+                    { phrase: 'take care of', meaning: 'chăm sóc' },
+                    { phrase: 'stay healthy', meaning: 'giữ sức khỏe' }
+                ],
+                dialogue: {
+                    context: 'At the doctor\'s office',
+                    lines: [
+                        { speaker: 'Doctor', text: 'What seems to be the problem?' },
+                        { speaker: 'Patient', text: 'I\'ve had a headache and fever for three days.' },
+                        { speaker: 'Doctor', text: 'Let me examine you. Do you have any other symptoms?' },
+                        { speaker: 'Patient', text: 'Yes, I also have a sore throat and cough.' }
+                    ]
+                },
+                culture: 'Ở Việt Nam, có thể mua thuốc không cần đơn. Ở nhiều nước phương Tây, cần đơn của bác sĩ cho hầu hết các loại thuốc.'
+            }
+        ];
+
+        // Thêm 15 chủ đề còn lại
+        const moreTopics = [
+            { id: 'shopping', title: 'Shopping', titleVi: 'Mua sắm', level: 'A2', icon: '🛍️' },
+            { id: 'weather', title: 'Weather & Seasons', titleVi: 'Thời tiết và mùa', level: 'A2', icon: '🌤️' },
+            { id: 'hobbies', title: 'Hobbies & Free Time', titleVi: 'Sở thích', level: 'A2', icon: '🎨' },
+            { id: 'school', title: 'School & Education', titleVi: 'Trường học', level: 'A2', icon: '🎓' },
+            { id: 'work', title: 'Work & Business', titleVi: 'Công việc', level: 'B1', icon: '💼' },
+            { id: 'environment', title: 'Environment & Nature', titleVi: 'Môi trường', level: 'B1', icon: '🌍' },
+            { id: 'technology', title: 'Technology', titleVi: 'Công nghệ', level: 'B1', icon: '💻' },
+            { id: 'culture', title: 'Culture & Traditions', titleVi: 'Văn hóa', level: 'B1', icon: '🎎' },
+            { id: 'sports', title: 'Sports & Fitness', titleVi: 'Thể thao', level: 'B1', icon: '⚽' },
+            { id: 'media', title: 'Media & Entertainment', titleVi: 'Giải trí', level: 'B1', icon: '🎬' },
+            { id: 'relationships', title: 'Relationships', titleVi: 'Mối quan hệ', level: 'B1', icon: '❤️' },
+            { id: 'housing', title: 'Housing & Living', titleVi: 'Nhà ở', level: 'B1', icon: '🏡' },
+            { id: 'finance', title: 'Finance & Money', titleVi: 'Tài chính', level: 'B1', icon: '💰' },
+            { id: 'social-issues', title: 'Social Issues', titleVi: 'Vấn đề xã hội', level: 'B1+', icon: '🌐' },
+            { id: 'global-challenges', title: 'Global Challenges', titleVi: 'Thách thức toàn cầu', level: 'B1+', icon: '🌏' }
+        ];
+
+        // Tạo dữ liệu cho các chủ đề thêm
+        moreTopics.forEach(topic => {
+            if (!theoryData.find(t => t.id === topic.id)) {
+                theoryData.push({
+                    ...topic,
+                    vocabulary: [
+                        { word: 'vocabulary1', meaning: 'từ vựng 1', example: 'Example sentence 1.' },
+                        { word: 'vocabulary2', meaning: 'từ vựng 2', example: 'Example sentence 2.' },
+                        { word: 'vocabulary3', meaning: 'từ vựng 3', example: 'Example sentence 3.' }
+                    ],
+                    grammar: {
+                        title: 'Ngữ pháp liên quan',
+                        explanation: 'Giải thích ngữ pháp cho chủ đề này',
+                        structure: 'Structure here',
+                        examples: ['Example 1.', 'Example 2.'],
+                        notes: ['Note 1.', 'Note 2.']
+                    },
+                    phrases: [
+                        { phrase: 'Phrase 1', meaning: 'Nghĩa 1' },
+                        { phrase: 'Phrase 2', meaning: 'Nghĩa 2' }
+                    ],
+                    dialogue: {
+                        context: 'Sample dialogue context',
+                        lines: [
+                            { speaker: 'A', text: 'Hello!' },
+                            { speaker: 'B', text: 'Hi there!' }
+                        ]
+                    },
+                    culture: 'Cultural note for this topic.'
+                });
+            }
+        });
+
+        // ========== APP ==========
+        let currentTopic = theoryData[0].id;
+        let sidebarOpen = false;
+        let searchQuery = '';
+
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="flex min-h-screen">
+                    ${renderSidebar()}
+                    <div class="flex-1 lg:ml-80">
+                        ${renderMobileMenu()}
+                        ${renderContent()}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSidebar() {
+            return `
+                <aside class="sidebar ${sidebarOpen ? 'open' : ''} fixed lg:fixed w-80 h-screen bg-white shadow-xl overflow-y-auto">
+                    <div class="p-6 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+                        <h1 class="text-2xl font-bold mb-2">📚 Lý thuyết</h1>
+                        <p class="text-sm opacity-90">Tiếng Anh A2-B1</p>
+                        <p class="text-xs opacity-75 mt-2">20 chủ đề chi tiết</p>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="p-4 border-b">
+                        <input
+                            type="text"
+                            placeholder="🔍 Tìm kiếm chủ đề..."
+                            value="${searchQuery}"
+                            oninput="handleSearch(this.value)"
+                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-blue-400 outline-none"
+                        />
+                    </div>
+
+                    <nav class="p-4">
+                        ${theoryData
+                            .filter(topic => !searchQuery || topic.title.toLowerCase().includes(searchQuery.toLowerCase()) || topic.titleVi.toLowerCase().includes(searchQuery.toLowerCase()))
+                            .map((topic, idx) => `
+                            <a href="#${topic.id}"
+                               class="flex items-center gap-3 p-3 rounded-xl mb-2 transition-all ${currentTopic === topic.id ? 'bg-blue-50 border-2 border-blue-200' : 'hover:bg-gray-50'}"
+                               onclick="selectTopic('${topic.id}')">
+                                <span class="text-2xl">${topic.icon}</span>
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-800 text-sm">${theoryData.indexOf(topic) + 1}. ${topic.title}</div>
+                                    <div class="text-xs text-gray-500">${topic.titleVi}</div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full text-xs font-bold ${topic.level === 'B1+' ? 'bg-red-100 text-red-700' : topic.level === 'B1' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}">${topic.level}</span>
+                            </a>
+                        `).join('')}
+                    </nav>
+                    <div class="p-4 border-t">
+                        <a href="public_english-practice-full_diff.html" class="block w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium text-center hover:from-green-700 hover:to-emerald-700 transition-all">
+                            🎯 Làm bài tập luyện tập
+                        </a>
+                    </div>
+                </aside>
+            `;
+        }
+
+        function renderMobileMenu() {
+            return `
+                <button onclick="toggleSidebar()" class="mobile-menu-btn lg:hidden fixed top-4 left-4 z-40 bg-white shadow-lg rounded-xl p-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                ${sidebarOpen ? '<div class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onclick="toggleSidebar()"></div>' : ''}
+            `;
+        }
+
+        function renderContent() {
+            const topic = theoryData.find(t => t.id === currentTopic);
+            if (!topic) return '';
+
+            return `
+                <div class="topic-content p-6 lg:p-12 max-w-5xl mx-auto">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl p-8 text-white mb-8 shadow-xl">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="text-6xl">${topic.icon}</span>
+                            <div>
+                                <h1 class="text-4xl font-bold">${topic.title}</h1>
+                                <p class="text-xl opacity-90 mt-1">${topic.titleVi}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-6">
+                            <span class="px-4 py-2 bg-white/20 rounded-full text-sm font-semibold">Trình độ: ${topic.level}</span>
+                            <span class="px-4 py-2 bg-white/20 rounded-full text-sm font-semibold">${topic.vocabulary.length} từ vựng</span>
+                        </div>
+                    </div>
+
+                    <!-- Vocabulary Section -->
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span class="text-4xl">📖</span>
+                            Từ vựng (Vocabulary)
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${topic.vocabulary.map(vocab => `
+                                <div class="vocab-card bg-white rounded-xl p-5 shadow-md border border-gray-100 transition-all">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <h3 class="text-xl font-bold text-blue-600">${vocab.word}</h3>
+                                        <button onclick="speak('${vocab.word}')" class="text-gray-400 hover:text-blue-600 transition-colors">
+                                            🔊
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-600 mb-2"><strong>Nghĩa:</strong> ${vocab.meaning}</p>
+                                    <p class="text-sm text-gray-500 italic">"${vocab.example}"</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+
+                    <!-- Grammar Section -->
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span class="text-4xl">📝</span>
+                            Ngữ pháp (Grammar)
+                        </h2>
+                        <div class="grammar-box rounded-2xl p-6 border-2 border-yellow-200">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-3">${topic.grammar.title}</h3>
+                            <p class="text-gray-700 mb-4">${topic.grammar.explanation}</p>
+                            <div class="bg-white rounded-xl p-4 mb-4">
+                                <p class="text-sm font-semibold text-gray-600 mb-2">Cấu trúc:</p>
+                                <p class="text-xl font-mono text-blue-600">${topic.grammar.structure}</p>
+                            </div>
+                            <div class="mb-4">
+                                <p class="font-semibold text-gray-700 mb-2">Ví dụ:</p>
+                                <ul class="space-y-2">
+                                    ${topic.grammar.examples.map(ex => `
+                                        <li class="flex items-start gap-2">
+                                            <span class="text-blue-600 mt-1">•</span>
+                                            <span class="text-gray-700">${ex}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-700 mb-2">Lưu ý:</p>
+                                <ul class="space-y-2">
+                                    ${topic.grammar.notes.map(note => `
+                                        <li class="flex items-start gap-2">
+                                            <span class="text-yellow-600 mt-1">⚠️</span>
+                                            <span class="text-gray-700">${note}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Phrases Section -->
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span class="text-4xl">💬</span>
+                            Cụm từ thông dụng (Common Phrases)
+                        </h2>
+                        <div class="space-y-3">
+                            ${topic.phrases.map(phrase => `
+                                <div class="phrase-item bg-white rounded-xl p-4 shadow-md">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-lg font-bold text-blue-600">${phrase.phrase}</p>
+                                            <p class="text-gray-600 mt-1">${phrase.meaning}</p>
+                                        </div>
+                                        <button onclick="speak('${phrase.phrase}')" class="text-gray-400 hover:text-blue-600 transition-colors text-2xl">
+                                            🔊
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+
+                    <!-- Dialogue Section -->
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span class="text-4xl">🗣️</span>
+                            Hội thoại mẫu (Sample Dialogue)
+                        </h2>
+                        <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                            <p class="text-sm text-gray-500 italic mb-4">${topic.dialogue.context}</p>
+                            <div class="space-y-3">
+                                ${topic.dialogue.lines.map(line => `
+                                    <div class="flex gap-3 ${line.speaker === 'A' || line.speaker === 'Waiter' || line.speaker === 'Doctor' ? '' : 'flex-row-reverse'}">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${line.speaker === 'A' || line.speaker === 'Waiter' || line.speaker === 'Doctor' ? 'bg-blue-500' : 'bg-pink-500'}">
+                                            ${line.speaker[0]}
+                                        </div>
+                                        <div class="flex-1 ${line.speaker === 'A' || line.speaker === 'Waiter' || line.speaker === 'Doctor' ? 'dialogue-a' : 'dialogue-b'} rounded-xl p-4">
+                                            <p class="text-sm font-semibold text-gray-600 mb-1">${line.speaker}:</p>
+                                            <p class="text-gray-800">${line.text}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Culture Section -->
+                    <section class="mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span class="text-4xl">🌍</span>
+                            Văn hóa (Cultural Notes)
+                        </h2>
+                        <div class="culture-box rounded-2xl p-6 border-2 border-green-200">
+                            <p class="text-gray-700 leading-relaxed">${topic.culture}</p>
+                        </div>
+                    </section>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
+                        ${theoryData.findIndex(t => t.id === currentTopic) > 0 ? `
+                            <button onclick="prevTopic()" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all">
+                                ← Bài trước
+                            </button>
+                        ` : '<div></div>'}
+                        ${theoryData.findIndex(t => t.id === currentTopic) < theoryData.length - 1 ? `
+                            <button onclick="nextTopic()" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all">
+                                Bài tiếp →
+                            </button>
+                        ` : '<div></div>'}
+                    </div>
+
+                    <!-- Back to Practice -->
+                    <div class="mt-8 text-center no-print">
+                        <a href="english-practice-with-auth.html" class="inline-block px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg">
+                            🎯 Làm bài tập luyện tập cho chủ đề này
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectTopic(topicId) {
+            currentTopic = topicId;
+            sidebarOpen = false;
+            render();
+            window.scrollTo(0, 0);
+        }
+
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            render();
+        }
+
+        function handleSearch(query) {
+            searchQuery = query;
+            render();
+        }
+
+        function prevTopic() {
+            const idx = theoryData.findIndex(t => t.id === currentTopic);
+            if (idx > 0) {
+                currentTopic = theoryData[idx - 1].id;
+                render();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function nextTopic() {
+            const idx = theoryData.findIndex(t => t.id === currentTopic);
+            if (idx < theoryData.length - 1) {
+                currentTopic = theoryData[idx + 1].id;
+                render();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>
